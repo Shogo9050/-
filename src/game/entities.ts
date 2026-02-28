@@ -8,17 +8,17 @@ export class Player {
     targetX = 0; targetY = 0;
     isMouseMoving = false;
     facingAngle = 0;
-    
+
     level = 1; exp = 0; maxExp = 10; score = 0;
-    
-    weapons: Record<string, {level: number, name: string, desc: string}> = {
+
+    weapons: Record<string, { level: number, name: string, desc: string }> = {
         hoe: { level: 1, name: '大クワ振り', desc: '周囲の敵をなぎ払う' },
         veggie: { level: 0, name: '野菜投げ', desc: '一番近い敵に野菜を投げる' },
         mushroom: { level: 0, name: '爆発キノコ', desc: '周囲に爆発するキノコを落とす' },
         shovel: { level: 0, name: 'シャベル突撃', desc: '向いている方向にシャベルを飛ばす' }
     };
 
-    update(keys: Record<string, boolean>, camera: {x: number, y: number}, canvas: HTMLCanvasElement) {
+    update(keys: Record<string, boolean>, camera: { x: number, y: number }, canvas: HTMLCanvasElement) {
         let dx = 0; let dy = 0;
         if (keys['w'] || keys['W'] || keys['ArrowUp']) dy -= 1;
         if (keys['s'] || keys['S'] || keys['ArrowDown']) dy += 1;
@@ -50,7 +50,7 @@ export class Player {
         camera.y = this.y - canvas.height / 2;
     }
 
-    draw(ctx: CanvasRenderingContext2D, camera: {x: number, y: number}) {
+    draw(ctx: CanvasRenderingContext2D, camera: { x: number, y: number }) {
         const drawX = this.x - camera.x;
         const drawY = this.y - camera.y;
         ctx.save();
@@ -58,83 +58,202 @@ export class Player {
         if (Math.abs(this.facingAngle) > Math.PI / 2) ctx.scale(-1, 1);
 
         // Shadow
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-        ctx.beginPath(); ctx.ellipse(0, 25, 18, 6, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+        ctx.beginPath(); ctx.ellipse(0, 28, 20, 7, 0, 0, Math.PI * 2); ctx.fill();
 
-        // Overalls (Blue)
-        ctx.fillStyle = '#3b82f6';
-        ctx.fillRect(-12, -5, 24, 25);
-        ctx.fillRect(-10, -15, 6, 10);
-        ctx.fillRect(4, -15, 6, 10);
-        
-        ctx.fillStyle = '#a855f7';
-        ctx.fillRect(-8, 5, 8, 8);
-        ctx.strokeStyle = '#000'; ctx.lineWidth = 1;
-        ctx.strokeRect(-8, 5, 8, 8);
-        ctx.beginPath(); ctx.moveTo(-6, 7); ctx.lineTo(-6, 11); ctx.moveTo(-4, 7); ctx.lineTo(-4, 11); ctx.stroke();
+        // Legs (straw sticking out from bottom of overalls)
+        ctx.fillStyle = '#d4a060';
+        ctx.fillRect(-10, 18, 6, 10);
+        ctx.fillRect(4, 18, 6, 10);
+        // Straw tufts at feet
+        ctx.strokeStyle = '#c8962e'; ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(-9, 28); ctx.lineTo(-12, 32);
+        ctx.moveTo(-7, 28); ctx.lineTo(-7, 33);
+        ctx.moveTo(-5, 28); ctx.lineTo(-3, 31);
+        ctx.moveTo(5, 28); ctx.lineTo(3, 32);
+        ctx.moveTo(7, 28); ctx.lineTo(7, 33);
+        ctx.moveTo(9, 28); ctx.lineTo(12, 31);
+        ctx.stroke();
+
+        // Overalls (Blue denim)
+        ctx.fillStyle = '#4a90d9';
+        // Main body
+        ctx.beginPath();
+        ctx.moveTo(-14, -2); ctx.lineTo(-14, 20); ctx.lineTo(14, 20); ctx.lineTo(14, -2);
+        ctx.closePath(); ctx.fill();
+        // Straps
+        ctx.fillRect(-11, -12, 6, 12);
+        ctx.fillRect(5, -12, 6, 12);
+        // Buttons on straps
+        ctx.fillStyle = '#2563eb';
+        ctx.beginPath(); ctx.arc(-8, -3, 2, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(8, -3, 2, 0, Math.PI * 2); ctx.fill();
+        // Seam line
+        ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(0, -2); ctx.lineTo(0, 20); ctx.stroke();
+
+        // Purple Patch on overalls
+        ctx.fillStyle = '#c084fc';
+        ctx.fillRect(-9, 8, 8, 8);
+        ctx.strokeStyle = '#7c3aed'; ctx.lineWidth = 1;
+        ctx.strokeRect(-9, 8, 8, 8);
+        // Stitch marks on patch
+        ctx.strokeStyle = '#e9d5ff'; ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.moveTo(-8, 10); ctx.lineTo(-8, 14);
+        ctx.moveTo(-6, 10); ctx.lineTo(-6, 14);
+        ctx.moveTo(-4, 10); ctx.lineTo(-4, 14);
+        ctx.stroke();
 
         // Shirt (Red Plaid)
-        ctx.fillStyle = '#ef4444';
-        ctx.fillRect(-14, -15, 28, 15);
-        ctx.strokeStyle = '#991b1b';
-        ctx.lineWidth = 2;
+        ctx.fillStyle = '#dc2626';
+        ctx.fillRect(-15, -16, 30, 16);
+        // Plaid pattern - horizontal
+        ctx.strokeStyle = '#991b1b'; ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(-14, -10); ctx.lineTo(14, -10);
-        ctx.moveTo(-14, -5); ctx.lineTo(14, -5);
-        ctx.moveTo(-5, -15); ctx.lineTo(-5, 0);
-        ctx.moveTo(5, -15); ctx.lineTo(5, 0);
+        ctx.moveTo(-15, -12); ctx.lineTo(15, -12);
+        ctx.moveTo(-15, -6); ctx.lineTo(15, -6);
+        ctx.stroke();
+        // Plaid pattern - vertical
+        ctx.strokeStyle = '#7f1d1d'; ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(-8, -16); ctx.lineTo(-8, 0);
+        ctx.moveTo(0, -16); ctx.lineTo(0, 0);
+        ctx.moveTo(8, -16); ctx.lineTo(8, 0);
         ctx.stroke();
 
-        // Arms
-        ctx.strokeStyle = '#fde047';
-        ctx.lineWidth = 4;
+        // Arms (straw colored sticks)
+        ctx.strokeStyle = '#b8860b'; ctx.lineWidth = 5;
+        ctx.lineCap = 'round';
         ctx.beginPath();
-        ctx.moveTo(-14, -10); ctx.lineTo(-24, -5);
-        ctx.moveTo(14, -10); ctx.lineTo(24, -5);
+        ctx.moveTo(-15, -10); ctx.lineTo(-28, -4);
         ctx.stroke();
         ctx.beginPath();
-        ctx.moveTo(-24, -5); ctx.lineTo(-28, -8);
-        ctx.moveTo(-24, -5); ctx.lineTo(-28, -2);
-        ctx.moveTo(24, -5); ctx.lineTo(28, -8);
-        ctx.moveTo(24, -5); ctx.lineTo(28, -2);
+        ctx.moveTo(15, -10); ctx.lineTo(28, -4);
         ctx.stroke();
 
-        // Yellow Scarf
-        ctx.fillStyle = '#fde047';
+        // Red plaid sleeves on arms
+        ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 6;
         ctx.beginPath();
-        ctx.moveTo(-16, -15); ctx.lineTo(16, -15); ctx.lineTo(0, -5); ctx.fill();
+        ctx.moveTo(-15, -10); ctx.lineTo(-20, -8);
+        ctx.stroke();
         ctx.beginPath();
-        ctx.moveTo(-10, -10); ctx.quadraticCurveTo(-20, -15, -30, -5); ctx.lineTo(-25, 0); ctx.quadraticCurveTo(-15, -10, -10, -5); ctx.fill();
+        ctx.moveTo(15, -10); ctx.lineTo(20, -8);
+        ctx.stroke();
+        ctx.strokeStyle = '#991b1b'; ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(-16, -11); ctx.lineTo(-20, -9);
+        ctx.moveTo(-16, -9); ctx.lineTo(-20, -7);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(16, -11); ctx.lineTo(20, -9);
+        ctx.moveTo(16, -9); ctx.lineTo(20, -7);
+        ctx.stroke();
 
-        // Head
+        // Straw tufts at hands
+        ctx.strokeStyle = '#c8962e'; ctx.lineWidth = 1.5;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(-28, -4); ctx.lineTo(-32, -8);
+        ctx.moveTo(-28, -4); ctx.lineTo(-33, -3);
+        ctx.moveTo(-28, -4); ctx.lineTo(-31, 1);
+        ctx.moveTo(28, -4); ctx.lineTo(32, -8);
+        ctx.moveTo(28, -4); ctx.lineTo(33, -3);
+        ctx.moveTo(28, -4); ctx.lineTo(31, 1);
+        ctx.stroke();
+
+        // Yellow Scarf (flowing)
+        ctx.fillStyle = '#fbbf24';
+        // Main scarf wrap
+        ctx.beginPath();
+        ctx.moveTo(-16, -16); ctx.lineTo(16, -16);
+        ctx.lineTo(12, -10); ctx.lineTo(-12, -10);
+        ctx.closePath(); ctx.fill();
+        // Flowing scarf tail
+        ctx.beginPath();
+        ctx.moveTo(-12, -14);
+        ctx.quadraticCurveTo(-22, -18, -32, -8);
+        ctx.lineTo(-28, -3);
+        ctx.quadraticCurveTo(-18, -12, -12, -10);
+        ctx.closePath(); ctx.fill();
+        // Scarf highlight
+        ctx.fillStyle = '#fde68a';
+        ctx.beginPath();
+        ctx.moveTo(-14, -15);
+        ctx.quadraticCurveTo(-24, -16, -30, -7);
+        ctx.lineTo(-29, -5);
+        ctx.quadraticCurveTo(-20, -14, -13, -12);
+        ctx.closePath(); ctx.fill();
+
+        // Head (round burlap/straw color)
         ctx.fillStyle = '#d4a373';
-        ctx.beginPath(); ctx.arc(0, -25, 16, 0, Math.PI * 2); ctx.fill();
-        ctx.lineWidth = 1; ctx.strokeStyle = '#8b5a2b'; ctx.stroke();
+        ctx.beginPath(); ctx.arc(0, -27, 17, 0, Math.PI * 2); ctx.fill();
+        // Head outline
+        ctx.lineWidth = 1.5; ctx.strokeStyle = '#8b5a2b'; ctx.stroke();
+        // Burlap texture lines on head
+        ctx.strokeStyle = 'rgba(139, 90, 43, 0.3)'; ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(-8, -34); ctx.lineTo(-6, -20);
+        ctx.moveTo(0, -35); ctx.lineTo(0, -19);
+        ctx.moveTo(8, -34); ctx.lineTo(6, -20);
+        ctx.stroke();
 
-        // Eyes
+        // Eyes (button-style with X)
         ctx.fillStyle = '#5c4033';
-        ctx.beginPath(); ctx.arc(-6, -28, 4, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(6, -28, 4, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = '#000'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(-7, -29, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(7, -29, 5, 0, Math.PI * 2); ctx.fill();
+        // X marks on buttons
+        ctx.strokeStyle = '#3e2723'; ctx.lineWidth = 1.8;
         ctx.beginPath();
-        ctx.moveTo(-8, -30); ctx.lineTo(-4, -26); ctx.moveTo(-4, -30); ctx.lineTo(-8, -26);
-        ctx.moveTo(4, -30); ctx.lineTo(8, -26); ctx.moveTo(8, -30); ctx.lineTo(4, -26);
+        ctx.moveTo(-9.5, -31.5); ctx.lineTo(-4.5, -26.5);
+        ctx.moveTo(-4.5, -31.5); ctx.lineTo(-9.5, -26.5);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(4.5, -31.5); ctx.lineTo(9.5, -26.5);
+        ctx.moveTo(9.5, -31.5); ctx.lineTo(4.5, -26.5);
         ctx.stroke();
 
-        // Mouth
+        // Mouth (stitched smile)
         ctx.strokeStyle = '#3e2723'; ctx.lineWidth = 1.5;
+        ctx.lineCap = 'round';
         ctx.beginPath();
-        ctx.moveTo(-8, -18); ctx.lineTo(8, -18);
-        ctx.moveTo(-6, -20); ctx.lineTo(-6, -16);
-        ctx.moveTo(0, -20); ctx.lineTo(0, -16);
-        ctx.moveTo(6, -20); ctx.lineTo(6, -16);
+        ctx.moveTo(-8, -19); ctx.lineTo(8, -19);
+        ctx.stroke();
+        // Stitch marks across mouth
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(-7, -21); ctx.lineTo(-7, -17);
+        ctx.moveTo(-3.5, -21); ctx.lineTo(-3.5, -17);
+        ctx.moveTo(0, -21); ctx.lineTo(0, -17);
+        ctx.moveTo(3.5, -21); ctx.lineTo(3.5, -17);
+        ctx.moveTo(7, -21); ctx.lineTo(7, -17);
         ctx.stroke();
 
-        // Hat
-        ctx.fillStyle = '#fde047';
-        ctx.beginPath(); ctx.ellipse(0, -38, 28, 8, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = '#ca8a04'; ctx.lineWidth = 2; ctx.stroke();
-        ctx.beginPath(); ctx.arc(0, -38, 16, Math.PI, 0); ctx.fill(); ctx.stroke();
+        // Hat brim (wide straw hat)
+        ctx.fillStyle = '#e8c95a';
+        ctx.beginPath(); ctx.ellipse(0, -40, 30, 8, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#b8860b'; ctx.lineWidth = 2; ctx.stroke();
+        // Hat top (dome)
+        ctx.fillStyle = '#e8c95a';
+        ctx.beginPath();
+        ctx.moveTo(-16, -40);
+        ctx.quadraticCurveTo(-16, -58, 0, -58);
+        ctx.quadraticCurveTo(16, -58, 16, -40);
+        ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = '#b8860b'; ctx.lineWidth = 2; ctx.stroke();
+        // Hat cross-hatch pattern
+        ctx.strokeStyle = 'rgba(184, 134, 11, 0.4)'; ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.moveTo(-10, -55); ctx.lineTo(-6, -42);
+        ctx.moveTo(-3, -56); ctx.lineTo(0, -42);
+        ctx.moveTo(4, -55); ctx.lineTo(7, -42);
+        ctx.moveTo(-12, -48); ctx.lineTo(12, -48);
+        ctx.moveTo(-14, -44); ctx.lineTo(14, -44);
+        ctx.stroke();
+        // Hat band
+        ctx.fillStyle = '#b8860b';
+        ctx.fillRect(-14, -43, 28, 3);
 
         ctx.restore();
     }
@@ -178,7 +297,7 @@ export class Enemy {
         this.wobble += 0.1;
     }
 
-    draw(ctx: CanvasRenderingContext2D, camera: {x: number, y: number}) {
+    draw(ctx: CanvasRenderingContext2D, camera: { x: number, y: number }) {
         const drawX = this.x - camera.x; const drawY = this.y - camera.y;
         ctx.save();
         ctx.translate(drawX, drawY);
@@ -188,11 +307,11 @@ export class Enemy {
             ctx.fillStyle = this.color;
             const offset = Math.sin(this.wobble) * (this.isElite ? 5 : 3);
             const r = this.radius;
-            ctx.beginPath(); ctx.arc(-r*0.6, 0, r*0.6, 0, Math.PI * 2); ctx.fill();
-            ctx.beginPath(); ctx.arc(0, offset, r*0.8, 0, Math.PI * 2); ctx.fill();
-            ctx.beginPath(); ctx.arc(r*0.8, -offset, r*0.6, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(-r * 0.6, 0, r * 0.6, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(0, offset, r * 0.8, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(r * 0.8, -offset, r * 0.6, 0, Math.PI * 2); ctx.fill();
             ctx.fillStyle = this.isElite ? '#fcd34d' : 'black';
-            ctx.beginPath(); ctx.arc(r, -offset - 2, r*0.2, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(r, -offset - 2, r * 0.2, 0, Math.PI * 2); ctx.fill();
         } else if (this.type === 'crow') {
             ctx.fillStyle = this.color; const flap = Math.sin(this.wobble * 2) * 5;
             ctx.beginPath(); ctx.ellipse(0, 0, 15, 8, 0, 0, Math.PI * 2); ctx.fill();
@@ -204,7 +323,7 @@ export class Enemy {
             const bounce = Math.abs(Math.sin(this.wobble)) * 5;
             ctx.beginPath(); ctx.ellipse(0, -bounce, 40, 30, 0, 0, Math.PI * 2); ctx.fill();
             ctx.fillStyle = '#fca5a5'; ctx.beginPath(); ctx.arc(40, -bounce, 12, 0, Math.PI * 2); ctx.fill();
-            ctx.fillStyle = 'white'; ctx.beginPath(); ctx.moveTo(35, -bounce+8); ctx.lineTo(48, -bounce+22); ctx.lineTo(40, -bounce+8); ctx.fill();
+            ctx.fillStyle = 'white'; ctx.beginPath(); ctx.moveTo(35, -bounce + 8); ctx.lineTo(48, -bounce + 22); ctx.lineTo(40, -bounce + 8); ctx.fill();
             ctx.fillStyle = 'red'; ctx.beginPath(); ctx.arc(28, -bounce - 8, 5, 0, Math.PI * 2); ctx.fill();
         }
 
@@ -213,9 +332,9 @@ export class Enemy {
         if ((this.isBoss || this.isElite) && this.hp < this.maxHp) {
             const barW = this.isBoss ? 80 : 40;
             ctx.fillStyle = 'red';
-            ctx.fillRect(drawX - barW/2, drawY - this.radius - 15, barW * (this.hp / this.maxHp), 6);
+            ctx.fillRect(drawX - barW / 2, drawY - this.radius - 15, barW * (this.hp / this.maxHp), 6);
             ctx.strokeStyle = 'black'; ctx.lineWidth = 1;
-            ctx.strokeRect(drawX - barW/2, drawY - this.radius - 15, barW, 6);
+            ctx.strokeRect(drawX - barW / 2, drawY - this.radius - 15, barW, 6);
         }
     }
 }
@@ -223,12 +342,12 @@ export class Enemy {
 export class ExpGem {
     x: number; y: number; radius = 5; value = 1;
     constructor(x: number, y: number) { this.x = x; this.y = y; }
-    draw(ctx: CanvasRenderingContext2D, camera: {x: number, y: number}) {
+    draw(ctx: CanvasRenderingContext2D, camera: { x: number, y: number }) {
         const drawX = this.x - camera.x; const drawY = this.y - camera.y;
         ctx.save(); ctx.translate(drawX, drawY);
         ctx.fillStyle = '#4ade80';
         ctx.beginPath(); ctx.moveTo(0, -this.radius); ctx.quadraticCurveTo(this.radius, 0, 0, this.radius); ctx.quadraticCurveTo(-this.radius, 0, 0, -this.radius); ctx.fill();
-        ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.beginPath(); ctx.arc(-1, -1, 2, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.beginPath(); ctx.arc(-1, -1, 2, 0, Math.PI * 2); ctx.fill();
         ctx.restore();
     }
 }
@@ -236,14 +355,14 @@ export class ExpGem {
 export class TreasureBox {
     x: number; y: number; radius = 20; wobble = 0;
     constructor(x: number, y: number) { this.x = x; this.y = y; }
-    draw(ctx: CanvasRenderingContext2D, camera: {x: number, y: number}) {
+    draw(ctx: CanvasRenderingContext2D, camera: { x: number, y: number }) {
         const drawX = this.x - camera.x; const drawY = this.y - camera.y;
         this.wobble += 0.1;
         const bounce = Math.abs(Math.sin(this.wobble)) * 5;
         ctx.save(); ctx.translate(drawX, drawY - bounce);
-        
+
         ctx.fillStyle = 'rgba(250, 204, 21, 0.4)';
-        ctx.beginPath(); ctx.arc(0, 0, 30, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(0, 0, 30, 0, Math.PI * 2); ctx.fill();
 
         ctx.fillStyle = '#92400e'; ctx.fillRect(-15, -10, 30, 20);
         ctx.fillStyle = '#b45309'; ctx.beginPath(); ctx.arc(0, -10, 15, Math.PI, 0); ctx.fill();
@@ -256,7 +375,7 @@ export class TreasureBox {
 export class Projectile {
     x: number; y: number; speed = 10; damage: number; radius: number; color: string; pierce: number;
     vx: number; vy: number; hitEnemies = new Set<Enemy>(); life?: number;
-    
+
     constructor(x: number, y: number, targetX: number, targetY: number, level: number, damage: number, radius: number, color: string, pierce = 0) {
         this.x = x; this.y = y; this.damage = damage; this.radius = radius; this.color = color; this.pierce = pierce;
         const dx = targetX - x; const dy = targetY - y;
@@ -264,7 +383,7 @@ export class Projectile {
         this.vx = (dx / dist) * this.speed; this.vy = (dy / dist) * this.speed;
     }
     update() { this.x += this.vx; this.y += this.vy; if (this.life !== undefined) this.life--; }
-    draw(ctx: CanvasRenderingContext2D, camera: {x: number, y: number}) {
+    draw(ctx: CanvasRenderingContext2D, camera: { x: number, y: number }) {
         const drawX = this.x - camera.x; const drawY = this.y - camera.y;
         ctx.fillStyle = this.color;
         ctx.beginPath(); ctx.arc(drawX, drawY, this.radius, 0, Math.PI * 2); ctx.fill();
@@ -281,7 +400,7 @@ export class VeggieProjectile extends Projectile {
         this.veggieType = types[Math.floor(Math.random() * types.length)] as any;
     }
 
-    draw(ctx: CanvasRenderingContext2D, camera: {x: number, y: number}) {
+    draw(ctx: CanvasRenderingContext2D, camera: { x: number, y: number }) {
         const drawX = this.x - camera.x; const drawY = this.y - camera.y;
         this.rotation += 0.2;
 
@@ -318,7 +437,7 @@ export class ShovelProjectile extends Projectile {
         this.vy = Math.sin(angle) * this.speed;
     }
 
-    draw(ctx: CanvasRenderingContext2D, camera: {x: number, y: number}) {
+    draw(ctx: CanvasRenderingContext2D, camera: { x: number, y: number }) {
         const drawX = this.x - camera.x; const drawY = this.y - camera.y;
         ctx.save();
         ctx.translate(drawX, drawY);
@@ -354,17 +473,17 @@ export class Explosion {
         }
     }
 
-    draw(ctx: CanvasRenderingContext2D, camera: {x: number, y: number}) {
+    draw(ctx: CanvasRenderingContext2D, camera: { x: number, y: number }) {
         const drawX = this.x - camera.x; const drawY = this.y - camera.y;
         const progress = 1 - (this.life / this.maxLife);
 
         ctx.save();
         ctx.translate(drawX, drawY);
         ctx.globalAlpha = 1 - progress;
-        
+
         ctx.fillStyle = '#ef4444';
         ctx.beginPath(); ctx.arc(0, 0, this.radius * progress, 0, Math.PI * 2); ctx.fill();
-        
+
         ctx.fillStyle = '#fde047';
         ctx.beginPath(); ctx.arc(0, 0, this.radius * progress * 0.7, 0, Math.PI * 2); ctx.fill();
 
@@ -384,14 +503,14 @@ export class HoeEffect {
 
     update() { this.life--; }
 
-    draw(ctx: CanvasRenderingContext2D, camera: {x: number, y: number}) {
+    draw(ctx: CanvasRenderingContext2D, camera: { x: number, y: number }) {
         const drawX = this.x - camera.x; const drawY = this.y - camera.y;
         const progress = 1 - (this.life / this.maxLife);
         const currentAngle = this.startAngle + this.swingAngle * progress;
 
         ctx.save();
         ctx.translate(drawX, drawY);
-        
+
         ctx.save();
         ctx.rotate(this.startAngle + this.swingAngle);
         ctx.globalAlpha = 1 - progress;
