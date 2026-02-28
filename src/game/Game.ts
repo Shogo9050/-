@@ -1,11 +1,13 @@
-import { Player, Enemy, ExpGem, TreasureBox, Projectile, VeggieProjectile, ShovelProjectile, Explosion, HoeEffect } from './entities';
+import { Player, Enemy, ExpGem, TreasureBox, Projectile, VeggieProjectile, ShovelProjectile, Explosion, HoeEffect, Wheat } from './entities';
 import { getDistance, RARITY_NAMES, RARITY_COLORS } from './constants';
+
+const TILE_SIZE = 40;
 
 export class Game {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
     state: 'playing' | 'paused' | 'gameover' = 'playing';
-    
+
     player: Player;
     enemies: Enemy[] = [];
     gems: ExpGem[] = [];
@@ -13,13 +15,20 @@ export class Game {
     effects: HoeEffect[] = [];
     explosions: Explosion[] = [];
     treasureBoxes: TreasureBox[] = [];
-    
+    wheats: Wheat[] = [];
+
+    // Tile-based farmland system: Set of "tx,ty" strings for cultivated tiles
+    cultivatedTiles = new Set<string>();
+
     timers = { hoe: 0, veggie: 0, mushroom: 0, shovel: 0 };
     frameCount = 0;
     timeElapsed = 0;
     enemySpawnRate = 60;
     enemySpawnTimer = 0;
-    
+
+    // Pending wheat to plant (accumulated from EXP gains)
+    pendingWheatCount = 0;
+
     camera = { x: 0, y: 0 };
     keys: Record<string, boolean> = {};
     animationFrameId = 0;
@@ -34,12 +43,43 @@ export class Game {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d')!;
         this.player = new Player();
+
+        // Cultivate initial area around player spawn (radius ~3 tiles)
+        for (let dx = -3; dx <= 3; dx++) {
+            for (let dy = -3; dy <= 3; dy++) {
+                if (dx * dx + dy * dy <= 10) {
+                    this.cultivatedTiles.add(`${dx},${dy}`);
+                }
+            }
+        }
+    }
+
+    tileKey(x: number, y: number): string {
+        return `${Math.floor(x / TILE_SIZE)},${Math.floor(y / TILE_SIZE)}`;
+    }
+
+    isTileCultivated(worldX: number, worldY: number): boolean {
+        return this.cultivatedTiles.has(this.tileKey(worldX, worldY));
+    }
+
+    cultivateArea(cx: number, cy: number, radius: number) {
+        const tileRadius = Math.ceil(radius / TILE_SIZE);
+        const centerTX = Math.floor(cx / TILE_SIZE);
+        const centerTY = Math.floor(cy / TILE_SIZE);
+        for (let dx = -tileRadius; dx <= tileRadius; dx++) {
+            for (let dy = -tileRadius; dy <= tileRadius; dy++) {
+                const dist = Math.sqrt(dx * dx + dy * dy) * TILE_SIZE;
+                if (dist <= radius) {
+                    this.cultivatedTiles.add(`${centerTX + dx},${centerTY + dy}`);
+                }
+            }
+        }
     }
 
     init() {
         const handleKeyDown = (e: KeyboardEvent) => { this.keys[e.key] = true; };
         const handleKeyUp = (e: KeyboardEvent) => { this.keys[e.key] = false; };
-        
+
         const setTarget = (e: MouseEvent | TouchEvent) => {
             if (this.state !== 'playing') return;
             e.preventDefault();
@@ -72,15 +112,40 @@ export class Game {
         const dist = Math.max(this.canvas.width, this.canvas.height) / 2 + 100;
         const sx = this.player.x + Math.cos(angle) * dist;
         const sy = this.player.y + Math.sin(angle) * dist;
-        
+
         if (!type) {
             type = (Math.random() > 0.8 - (this.timeElapsed * 0.002)) ? 'crow' : 'worm';
         }
         this.enemies.push(new Enemy(sx, sy, type));
     }
 
+    // Plant wheat on random cultivated tiles
+    plantWheat(count: number) {
+        const cultivatedArr = Array.from(this.cultivatedTiles);
+        if (cultivatedArr.length === 0) return;
+
+        for (let i = 0; i < count; i++) {
+            // Try to find a cultivated tile that doesn't already have wheat
+            let attempts = 0;
+            while (attempts < 20) {
+                const tileStr = cultivatedArr[Math.floor(Math.random() * cultivatedArr.length)];
+                const [tx, ty] = tileStr.split(',').map(Number);
+                const wx = tx * TILE_SIZE + TILE_SIZE / 2 + (Math.random() - 0.5) * 20;
+                const wy = ty * TILE_SIZE + TILE_SIZE / 2 + (Math.random() - 0.5) * 20;
+
+                // Check no wheat already nearby
+                const tooClose = this.wheats.some(w => !w.harvested && getDistance(w.x, w.y, wx, wy) < 25);
+                if (!tooClose) {
+                    this.wheats.push(new Wheat(wx, wy));
+                    break;
+                }
+                attempts++;
+            }
+        }
+    }
+
     handleWeapons() {
-        // 1. Hoe
+        // 1. Hoe - also cultivates ground and harvests wheat
         const hoe = this.player.weapons.hoe;
         if (hoe.level > 0) {
             this.timers.hoe++;
@@ -89,6 +154,11 @@ export class Game {
                 const range = 70 + hoe.level * 15;
                 const damage = 20 + hoe.level * 10;
                 this.effects.push(new HoeEffect(this.player.x, this.player.y, range, hoe.level));
+
+                // Cultivate ground in hoe range
+                this.cultivateArea(this.player.x, this.player.y, range);
+
+                // Damage enemies
                 for (const enemy of this.enemies) {
                     if (getDistance(this.player.x, this.player.y, enemy.x, enemy.y) <= range + enemy.radius) {
                         enemy.hp -= damage;
@@ -97,6 +167,24 @@ export class Game {
                             enemy.x += Math.cos(ang) * 40; enemy.y += Math.sin(ang) * 40;
                         }
                     }
+                }
+
+                // Harvest mature wheat in range
+                let harvestedCount = 0;
+                for (const wheat of this.wheats) {
+                    if (!wheat.harvested && wheat.isMature &&
+                        getDistance(this.player.x, this.player.y, wheat.x, wheat.y) <= range) {
+                        wheat.harvested = true;
+                        harvestedCount++;
+                    }
+                }
+                // Each harvested wheat triggers a level-up / skill selection
+                if (harvestedCount > 0) {
+                    this.player.score += harvestedCount * 50;
+                    // Queue level ups for harvested wheat
+                    // We trigger one at a time; queue remaining
+                    this.pendingWheatCount += harvestedCount - 1;
+                    this.levelUp();
                 }
             }
         }
@@ -156,13 +244,24 @@ export class Game {
         }
     }
 
+    // Check if a position is on cultivated ground (with some tolerance)
+    canMoveTo(x: number, y: number): boolean {
+        // Check the 4 corners of the player's bounding box
+        const r = this.player.radius * 0.6;
+        return this.isTileCultivated(x - r, y - r) ||
+            this.isTileCultivated(x + r, y - r) ||
+            this.isTileCultivated(x - r, y + r) ||
+            this.isTileCultivated(x + r, y + r) ||
+            this.isTileCultivated(x, y);
+    }
+
     update() {
         if (this.state !== 'playing') return;
 
         this.frameCount++;
         if (this.frameCount % 60 === 0) {
             this.timeElapsed++;
-            
+
             if (this.timeElapsed === 60 || this.timeElapsed === 120) this.spawnEnemy('elite');
             if (this.timeElapsed === 180) {
                 this.spawnEnemy('boss');
@@ -170,7 +269,28 @@ export class Game {
             }
         }
 
+        // Save old position for collision with uncultivated ground
+        const oldX = this.player.x;
+        const oldY = this.player.y;
         this.player.update(this.keys, this.camera, this.canvas);
+
+        // Movement restriction: can only walk on cultivated tiles
+        if (!this.canMoveTo(this.player.x, this.player.y)) {
+            // Try sliding along axes
+            if (this.canMoveTo(this.player.x, oldY)) {
+                this.player.y = oldY;
+                this.camera.y = this.player.y - this.canvas.height / 2;
+            } else if (this.canMoveTo(oldX, this.player.y)) {
+                this.player.x = oldX;
+                this.camera.x = this.player.x - this.canvas.width / 2;
+            } else {
+                this.player.x = oldX;
+                this.player.y = oldY;
+                this.camera.x = this.player.x - this.canvas.width / 2;
+                this.camera.y = this.player.y - this.canvas.height / 2;
+            }
+            this.player.isMouseMoving = false;
+        }
 
         this.enemySpawnTimer++;
         let currentRate = this.timeElapsed >= 180 ? 90 : this.enemySpawnRate;
@@ -183,8 +303,8 @@ export class Game {
         for (let i = this.projectiles.length - 1; i >= 0; i--) {
             const proj = this.projectiles[i];
             proj.update();
-            
-            if ((proj.life !== undefined && proj.life <= 0) || 
+
+            if ((proj.life !== undefined && proj.life <= 0) ||
                 getDistance(this.player.x, this.player.y, proj.x, proj.y) > 1000) {
                 this.projectiles.splice(i, 1);
                 continue;
@@ -197,7 +317,7 @@ export class Game {
                 if (getDistance(proj.x, proj.y, enemy.x, enemy.y) < proj.radius + enemy.radius) {
                     enemy.hp -= proj.damage;
                     proj.hitEnemies.add(enemy);
-                    if (proj.pierce > 0) { proj.pierce--; } 
+                    if (proj.pierce > 0) { proj.pierce--; }
                     else { this.projectiles.splice(i, 1); break; }
                 }
             }
@@ -217,7 +337,6 @@ export class Game {
                     this.treasureBoxes.push(new TreasureBox(enemy.x, enemy.y));
                     if (enemy.isBoss) {
                         this.player.score += 5000;
-                        // Stage Clear after a short delay
                         setTimeout(() => {
                             this.state = 'paused';
                             this.onStageClear?.(this.player.score);
@@ -242,6 +361,7 @@ export class Game {
             }
         }
 
+        // EXP collection → plant wheat instead of direct level up
         const magnetRange = 80;
         for (let i = this.gems.length - 1; i >= 0; i--) {
             const gem = this.gems[i];
@@ -252,13 +372,25 @@ export class Game {
                 this.gems.splice(i, 1);
                 if (this.player.exp >= this.player.maxExp) {
                     this.player.exp -= this.player.maxExp;
-                    this.levelUp();
+                    this.player.level++;
+                    this.player.maxExp = Math.floor(this.player.maxExp * 1.5);
+                    this.player.hp = Math.min(this.player.maxHp, this.player.hp + 20);
+                    // Plant wheat! More wheat at higher levels
+                    const wheatCount = 2 + Math.floor(this.player.level / 2);
+                    this.plantWheat(wheatCount);
                 }
             } else if (dist < magnetRange) {
                 const ang = Math.atan2(this.player.y - gem.y, this.player.x - gem.x);
                 gem.x += Math.cos(ang) * 6; gem.y += Math.sin(ang) * 6;
             }
         }
+
+        // Update wheat
+        for (const wheat of this.wheats) {
+            wheat.update();
+        }
+        // Clean up old harvested wheat
+        this.wheats = this.wheats.filter(w => !w.harvested || w.age < w.maxAge + 60);
 
         for (let i = this.treasureBoxes.length - 1; i >= 0; i--) {
             const box = this.treasureBoxes[i];
@@ -278,39 +410,138 @@ export class Game {
         if (this.frameCount % 5 === 0) {
             const m = Math.floor(this.timeElapsed / 60).toString().padStart(2, '0');
             const s = (this.timeElapsed % 60).toString().padStart(2, '0');
+
+            // Count mature wheat
+            const matureWheat = this.wheats.filter(w => w.isMature && !w.harvested).length;
+
             this.onStateChange?.({
                 hp: this.player.hp, maxHp: this.player.maxHp,
                 exp: this.player.exp, maxExp: this.player.maxExp,
                 level: this.player.level, score: this.player.score,
-                timeStr: `${m}:${s}`
+                timeStr: `${m}:${s}`,
+                matureWheat
             });
         }
     }
 
     drawBackground() {
-        const size = 100;
-        const sx = Math.floor(this.camera.x / size) * size;
-        const sy = Math.floor(this.camera.y / size) * size;
-        
-        this.ctx.fillStyle = '#84cc16';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        this.ctx.fillStyle = '#65a30d';
-        for (let x = sx; x < sx + this.canvas.width + size; x += size) {
-            this.ctx.fillRect(x - this.camera.x, 0, 4, this.canvas.height);
-        }
-        for (let y = sy; y < sy + this.canvas.height + size; y += size) {
-            this.ctx.fillRect(0, y - this.camera.y, this.canvas.width, 4);
+        const ctx = this.ctx;
+        const camX = this.camera.x;
+        const camY = this.camera.y;
+
+        // Fill entire screen with uncultivated soil (hard/dry ground)
+        ctx.fillStyle = '#8b7355';
+        ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Draw uncultivated ground texture (cracked dry earth pattern)
+        const startTX = Math.floor(camX / TILE_SIZE) - 1;
+        const startTY = Math.floor(camY / TILE_SIZE) - 1;
+        const endTX = startTX + Math.ceil(this.canvas.width / TILE_SIZE) + 2;
+        const endTY = startTY + Math.ceil(this.canvas.height / TILE_SIZE) + 2;
+
+        for (let tx = startTX; tx <= endTX; tx++) {
+            for (let ty = startTY; ty <= endTY; ty++) {
+                const screenX = tx * TILE_SIZE - camX;
+                const screenY = ty * TILE_SIZE - camY;
+                const key = `${tx},${ty}`;
+
+                if (this.cultivatedTiles.has(key)) {
+                    // Cultivated tile - rich dark soil with furrow lines
+                    ctx.fillStyle = '#5c3d1e';
+                    ctx.fillRect(screenX, screenY, TILE_SIZE, TILE_SIZE);
+
+                    // Furrow lines (horizontal)
+                    ctx.strokeStyle = '#4a2e14';
+                    ctx.lineWidth = 1;
+                    for (let fy = 0; fy < TILE_SIZE; fy += 8) {
+                        ctx.beginPath();
+                        ctx.moveTo(screenX, screenY + fy);
+                        ctx.lineTo(screenX + TILE_SIZE, screenY + fy);
+                        ctx.stroke();
+                    }
+
+                    // Lighter soil clumps
+                    const hash = Math.sin(tx * 12.9898 + ty * 78.233) * 43758.5453;
+                    const r = hash - Math.floor(hash);
+                    if (r > 0.6) {
+                        ctx.fillStyle = '#6b4830';
+                        ctx.beginPath();
+                        ctx.arc(screenX + TILE_SIZE * r, screenY + TILE_SIZE * (1 - r), 3, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+
+                    // Subtle tile border (cultivated area edge)
+                    ctx.strokeStyle = 'rgba(92, 61, 30, 0.3)';
+                    ctx.lineWidth = 0.5;
+                    ctx.strokeRect(screenX, screenY, TILE_SIZE, TILE_SIZE);
+                } else {
+                    // Uncultivated - dry hard ground with random texture
+                    const hash = Math.sin(tx * 12.9898 + ty * 78.233) * 43758.5453;
+                    const r = hash - Math.floor(hash);
+
+                    // Slight color variation per tile
+                    const shade = Math.floor(r * 20) - 10;
+                    const baseR = 139 + shade;
+                    const baseG = 115 + shade;
+                    const baseB = 85 + shade;
+                    ctx.fillStyle = `rgb(${baseR},${baseG},${baseB})`;
+                    ctx.fillRect(screenX, screenY, TILE_SIZE, TILE_SIZE);
+
+                    // Small rocks/pebbles
+                    if (r > 0.7) {
+                        ctx.fillStyle = '#9a8a72';
+                        ctx.beginPath();
+                        ctx.ellipse(screenX + TILE_SIZE * 0.3, screenY + TILE_SIZE * 0.6, 4, 3, r * 2, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    // Dry cracks
+                    if (r > 0.4 && r < 0.6) {
+                        ctx.strokeStyle = 'rgba(100, 80, 50, 0.3)';
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(screenX + 5, screenY + 5);
+                        ctx.lineTo(screenX + TILE_SIZE * r, screenY + TILE_SIZE * (1 - r));
+                        ctx.lineTo(screenX + TILE_SIZE - 5, screenY + TILE_SIZE - 10);
+                        ctx.stroke();
+                    }
+                    // Occasional small weeds/grass tufts
+                    if (r > 0.85) {
+                        ctx.strokeStyle = '#7a8a4a';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(screenX + 20, screenY + TILE_SIZE - 2);
+                        ctx.lineTo(screenX + 18, screenY + TILE_SIZE - 10);
+                        ctx.moveTo(screenX + 22, screenY + TILE_SIZE - 2);
+                        ctx.lineTo(screenX + 25, screenY + TILE_SIZE - 8);
+                        ctx.stroke();
+                    }
+                }
+            }
         }
 
-        this.ctx.fillStyle = '#a16207';
-        for (let x = sx - size; x < sx + this.canvas.width + size; x += size) {
-            for (let y = sy - size; y < sy + this.canvas.height + size; y += size) {
-                const hash = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
-                if (hash - Math.floor(hash) > 0.8) {
-                    this.ctx.beginPath();
-                    this.ctx.ellipse(x - this.camera.x + 50, y - this.camera.y + 50, 40, 20, 0, 0, Math.PI * 2);
-                    this.ctx.fill();
+        // Draw border glow around cultivated area edge tiles
+        ctx.lineWidth = 2;
+        for (let tx = startTX; tx <= endTX; tx++) {
+            for (let ty = startTY; ty <= endTY; ty++) {
+                const key = `${tx},${ty}`;
+                if (!this.cultivatedTiles.has(key)) continue;
+
+                const screenX = tx * TILE_SIZE - camX;
+                const screenY = ty * TILE_SIZE - camY;
+
+                // Check each neighbor - if uncultivated, draw border on that side
+                ctx.strokeStyle = 'rgba(139, 90, 43, 0.6)';
+                if (!this.cultivatedTiles.has(`${tx},${ty - 1}`)) {
+                    ctx.beginPath(); ctx.moveTo(screenX, screenY); ctx.lineTo(screenX + TILE_SIZE, screenY); ctx.stroke();
+                }
+                if (!this.cultivatedTiles.has(`${tx},${ty + 1}`)) {
+                    ctx.beginPath(); ctx.moveTo(screenX, screenY + TILE_SIZE); ctx.lineTo(screenX + TILE_SIZE, screenY + TILE_SIZE); ctx.stroke();
+                }
+                if (!this.cultivatedTiles.has(`${tx - 1},${ty}`)) {
+                    ctx.beginPath(); ctx.moveTo(screenX, screenY); ctx.lineTo(screenX, screenY + TILE_SIZE); ctx.stroke();
+                }
+                if (!this.cultivatedTiles.has(`${tx + 1},${ty}`)) {
+                    ctx.beginPath(); ctx.moveTo(screenX + TILE_SIZE, screenY); ctx.lineTo(screenX + TILE_SIZE, screenY + TILE_SIZE); ctx.stroke();
                 }
             }
         }
@@ -319,12 +550,15 @@ export class Game {
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawBackground();
-        
+
+        // Draw wheat (before entities so they appear behind characters)
+        this.wheats.forEach(w => w.draw(this.ctx, this.camera));
+
         this.treasureBoxes.forEach(b => b.draw(this.ctx, this.camera));
         this.gems.forEach(g => g.draw(this.ctx, this.camera));
         this.effects.forEach(e => e.draw(this.ctx, this.camera));
         this.explosions.forEach(e => e.draw(this.ctx, this.camera));
-        
+
         this.enemies.sort((a, b) => a.y - b.y).forEach(e => e.draw(this.ctx, this.camera));
         this.projectiles.forEach(p => p.draw(this.ctx, this.camera));
         this.player.draw(this.ctx, this.camera);
@@ -337,13 +571,9 @@ export class Game {
     }
 
     levelUp() {
-        this.player.level++;
-        this.player.maxExp = Math.floor(this.player.maxExp * 1.5);
-        this.player.hp = Math.min(this.player.maxHp, this.player.hp + 20);
-        
         this.state = 'paused';
         this.player.isMouseMoving = false;
-        
+
         const available = Object.keys(this.player.weapons).filter(k => this.player.weapons[k].level < 5);
         let options = [];
         if (available.length > 0) {
@@ -365,12 +595,22 @@ export class Game {
         if (key !== 'max' && this.player.weapons[key]) {
             this.player.weapons[key].level++;
         }
+        // Check if there are pending wheat harvests
+        if (this.pendingWheatCount > 0) {
+            this.pendingWheatCount--;
+            // Trigger next level up after a short delay
+            setTimeout(() => {
+                if (this.state === 'playing') {
+                    this.levelUp();
+                }
+            }, 300);
+        }
     }
 
     openTreasure() {
         this.state = 'paused';
         this.player.isMouseMoving = false;
-        
+
         const r = Math.random();
         let numUpgrades = 1, rarity = 1, title = '緑の宝箱（1枠強化）';
         if (r < 0.60) {
@@ -382,7 +622,7 @@ export class Game {
         }
 
         const results = [];
-        for(let i=0; i<numUpgrades; i++) {
+        for (let i = 0; i < numUpgrades; i++) {
             const upgradeable = Object.keys(this.player.weapons).filter(k => this.player.weapons[k].level < 5);
             if (upgradeable.length === 0) {
                 results.push({ text: '💰 ボーナス金貨獲得！ (+500点)', color: '#facc15' });

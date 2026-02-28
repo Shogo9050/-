@@ -784,3 +784,123 @@ export class HoeEffect {
         ctx.restore();
     }
 }
+
+export class Wheat {
+    x: number; y: number;
+    age = 0;
+    maxAge = 600; // ~10 seconds at 60fps
+    harvested = false;
+    radius = 12;
+
+    constructor(x: number, y: number) {
+        this.x = x; this.y = y;
+    }
+
+    get growth(): number {
+        return Math.min(1, this.age / this.maxAge);
+    }
+
+    get isMature(): boolean {
+        return this.age >= this.maxAge;
+    }
+
+    update() {
+        if (!this.harvested && this.age < this.maxAge) {
+            this.age++;
+        }
+    }
+
+    draw(ctx: CanvasRenderingContext2D, camera: { x: number, y: number }) {
+        if (this.harvested) return;
+        const drawX = this.x - camera.x;
+        const drawY = this.y - camera.y;
+        const g = this.growth;
+
+        ctx.save();
+        ctx.translate(drawX, drawY);
+
+        if (g < 0.3) {
+            // Seedling - tiny green sprout
+            const h = 4 + g * 20;
+            ctx.strokeStyle = '#4ade80'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -h); ctx.stroke();
+            ctx.fillStyle = '#4ade80';
+            ctx.beginPath(); ctx.ellipse(-2, -h, 3, 2, -0.3, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(2, -h + 2, 3, 2, 0.3, 0, Math.PI * 2); ctx.fill();
+        } else if (g < 0.7) {
+            // Growing - taller green stalks
+            const h = 10 + (g - 0.3) * 40;
+            const sway = Math.sin(this.age * 0.03) * 2;
+            for (let i = -1; i <= 1; i++) {
+                ctx.strokeStyle = i === 0 ? '#22c55e' : '#16a34a'; ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(i * 4, 0);
+                ctx.quadraticCurveTo(i * 4 + sway, -h / 2, i * 4 + sway * 1.5, -h);
+                ctx.stroke();
+                // Small leaves
+                if (h > 15) {
+                    ctx.fillStyle = '#22c55e';
+                    ctx.beginPath();
+                    ctx.ellipse(i * 4 + sway * 0.8 + (i >= 0 ? 3 : -3), -h * 0.6, 4, 1.5, i >= 0 ? 0.5 : -0.5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        } else {
+            // Mature - golden wheat ready to harvest
+            const h = 25 + (g - 0.7) * 10;
+            const sway = Math.sin(this.age * 0.02) * 3;
+
+            for (let i = -1; i <= 1; i++) {
+                const stalkX = i * 5;
+                const tipX = stalkX + sway * (1 + i * 0.3);
+                const tipY = -h - i * 2;
+
+                // Stalk
+                ctx.strokeStyle = '#d4a017'; ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(stalkX, 0);
+                ctx.quadraticCurveTo(stalkX + sway * 0.5, -h / 2, tipX, tipY);
+                ctx.stroke();
+
+                // Wheat head (grain cluster)
+                ctx.fillStyle = '#eab308';
+                ctx.beginPath();
+                ctx.ellipse(tipX, tipY - 4, 3.5, 7, (sway + i) * 0.05, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#b8860b'; ctx.lineWidth = 0.8;
+                ctx.stroke();
+
+                // Grain texture lines
+                ctx.strokeStyle = '#ca8a04'; ctx.lineWidth = 0.5;
+                ctx.beginPath();
+                ctx.moveTo(tipX - 2, tipY - 7); ctx.lineTo(tipX - 2, tipY - 1);
+                ctx.moveTo(tipX, tipY - 8); ctx.lineTo(tipX, tipY);
+                ctx.moveTo(tipX + 2, tipY - 7); ctx.lineTo(tipX + 2, tipY - 1);
+                ctx.stroke();
+
+                // Awns (whiskers)
+                ctx.strokeStyle = '#d4a017'; ctx.lineWidth = 0.8;
+                ctx.beginPath();
+                ctx.moveTo(tipX - 1, tipY - 8); ctx.lineTo(tipX - 5, tipY - 14);
+                ctx.moveTo(tipX + 1, tipY - 8); ctx.lineTo(tipX + 5, tipY - 14);
+                ctx.moveTo(tipX, tipY - 9); ctx.lineTo(tipX, tipY - 15);
+                ctx.stroke();
+
+                // Leaves on stalk
+                ctx.fillStyle = '#a3b818';
+                ctx.beginPath();
+                ctx.ellipse(stalkX + (i >= 0 ? 4 : -4), -h * 0.4, 5, 1.5, i >= 0 ? 0.4 : -0.4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Sparkle effect when mature
+            if (this.isMature) {
+                const sparkle = Math.sin(this.age * 0.1) * 0.5 + 0.5;
+                ctx.fillStyle = `rgba(255, 255, 200, ${sparkle * 0.6})`;
+                ctx.beginPath(); ctx.arc(sway, -h - 8, 4, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+
+        ctx.restore();
+    }
+}
