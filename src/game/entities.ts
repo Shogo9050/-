@@ -57,203 +57,459 @@ export class Player {
         ctx.translate(drawX, drawY);
         if (Math.abs(this.facingAngle) > Math.PI / 2) ctx.scale(-1, 1);
 
-        // Shadow
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
-        ctx.beginPath(); ctx.ellipse(0, 28, 20, 7, 0, 0, Math.PI * 2); ctx.fill();
+        // ===== SHADOW =====
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+        ctx.beginPath(); ctx.ellipse(0, 32, 22, 6, 0, 0, Math.PI * 2); ctx.fill();
 
-        // Legs (straw sticking out from bottom of overalls)
-        ctx.fillStyle = '#d4a060';
-        ctx.fillRect(-10, 18, 6, 10);
-        ctx.fillRect(4, 18, 6, 10);
-        // Straw tufts at feet
-        ctx.strokeStyle = '#c8962e'; ctx.lineWidth = 1.5;
+        // ===== LEGS (straw poles) =====
+        // Left leg
+        ctx.fillStyle = '#c49a3c';
+        ctx.save(); ctx.translate(-7, 22);
+        ctx.fillRect(-3, 0, 6, 10);
+        // Leg outline
+        ctx.strokeStyle = '#9a7520'; ctx.lineWidth = 1;
+        ctx.strokeRect(-3, 0, 6, 10);
+        ctx.restore();
+        // Right leg
+        ctx.save(); ctx.translate(7, 22);
+        ctx.fillStyle = '#c49a3c';
+        ctx.fillRect(-3, 0, 6, 10);
+        ctx.strokeStyle = '#9a7520'; ctx.lineWidth = 1;
+        ctx.strokeRect(-3, 0, 6, 10);
+        ctx.restore();
+
+        // Straw tufts at feet (multiple per leg for fullness)
+        ctx.strokeStyle = '#d4a84b'; ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
         ctx.beginPath();
-        ctx.moveTo(-9, 28); ctx.lineTo(-12, 32);
-        ctx.moveTo(-7, 28); ctx.lineTo(-7, 33);
-        ctx.moveTo(-5, 28); ctx.lineTo(-3, 31);
-        ctx.moveTo(5, 28); ctx.lineTo(3, 32);
-        ctx.moveTo(7, 28); ctx.lineTo(7, 33);
-        ctx.moveTo(9, 28); ctx.lineTo(12, 31);
+        // Left foot straw
+        ctx.moveTo(-11, 31); ctx.lineTo(-15, 36);
+        ctx.moveTo(-9, 31); ctx.lineTo(-11, 37);
+        ctx.moveTo(-7, 32); ctx.lineTo(-7, 38);
+        ctx.moveTo(-5, 31); ctx.lineTo(-3, 37);
+        ctx.moveTo(-3, 31); ctx.lineTo(0, 35);
+        ctx.stroke();
+        ctx.beginPath();
+        // Right foot straw
+        ctx.moveTo(3, 31); ctx.lineTo(0, 35);
+        ctx.moveTo(5, 31); ctx.lineTo(3, 37);
+        ctx.moveTo(7, 32); ctx.lineTo(7, 38);
+        ctx.moveTo(9, 31); ctx.lineTo(11, 37);
+        ctx.moveTo(11, 31); ctx.lineTo(15, 36);
+        ctx.stroke();
+        // Lighter straw highlights
+        ctx.strokeStyle = '#e8c95a'; ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(-10, 31); ctx.lineTo(-13, 35);
+        ctx.moveTo(-6, 32); ctx.lineTo(-6, 36);
+        ctx.moveTo(6, 32); ctx.lineTo(6, 36);
+        ctx.moveTo(10, 31); ctx.lineTo(13, 35);
         ctx.stroke();
 
-        // Overalls (Blue denim)
-        ctx.fillStyle = '#4a90d9';
-        // Main body
+        // ===== OVERALLS (Blue denim) =====
+        ctx.fillStyle = '#5b9bd5';
+        // Main overall body with slight rounded shape
         ctx.beginPath();
-        ctx.moveTo(-14, -2); ctx.lineTo(-14, 20); ctx.lineTo(14, 20); ctx.lineTo(14, -2);
+        ctx.moveTo(-15, 0);
+        ctx.lineTo(-16, 22);
+        ctx.lineTo(-8, 23); ctx.lineTo(-8, 22);
+        ctx.lineTo(8, 22); ctx.lineTo(8, 23);
+        ctx.lineTo(16, 22);
+        ctx.lineTo(15, 0);
         ctx.closePath(); ctx.fill();
+        // Denim shade variation
+        ctx.fillStyle = '#4a8bc4';
+        ctx.fillRect(-15, 12, 30, 10);
+        // Overall outline
+        ctx.strokeStyle = '#3a6fa0'; ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(-15, 0); ctx.lineTo(-16, 22); ctx.lineTo(16, 22); ctx.lineTo(15, 0);
+        ctx.stroke();
+        // Center seam
+        ctx.strokeStyle = '#3a6fa0'; ctx.lineWidth = 1;
+        ctx.setLineDash([3, 2]);
+        ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 22); ctx.stroke();
+        ctx.setLineDash([]);
+        // Leg split line
+        ctx.strokeStyle = '#3a6fa0'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(0, 14); ctx.lineTo(0, 22); ctx.stroke();
+
         // Straps
-        ctx.fillRect(-11, -12, 6, 12);
-        ctx.fillRect(5, -12, 6, 12);
-        // Buttons on straps
-        ctx.fillStyle = '#2563eb';
-        ctx.beginPath(); ctx.arc(-8, -3, 2, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(8, -3, 2, 0, Math.PI * 2); ctx.fill();
-        // Seam line
-        ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(0, -2); ctx.lineTo(0, 20); ctx.stroke();
+        ctx.fillStyle = '#5b9bd5';
+        ctx.fillRect(-12, -14, 7, 16);
+        ctx.fillRect(5, -14, 7, 16);
+        ctx.strokeStyle = '#3a6fa0'; ctx.lineWidth = 1;
+        ctx.strokeRect(-12, -14, 7, 16);
+        ctx.strokeRect(5, -14, 7, 16);
 
-        // Purple Patch on overalls
-        ctx.fillStyle = '#c084fc';
-        ctx.fillRect(-9, 8, 8, 8);
-        ctx.strokeStyle = '#7c3aed'; ctx.lineWidth = 1;
-        ctx.strokeRect(-9, 8, 8, 8);
-        // Stitch marks on patch
-        ctx.strokeStyle = '#e9d5ff'; ctx.lineWidth = 0.8;
+        // Metal rivet buttons on straps
+        ctx.fillStyle = '#ddd';
+        ctx.beginPath(); ctx.arc(-8.5, -1, 2.5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(8.5, -1, 2.5, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#999'; ctx.lineWidth = 0.8;
+        ctx.beginPath(); ctx.arc(-8.5, -1, 2.5, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.arc(8.5, -1, 2.5, 0, Math.PI * 2); ctx.stroke();
+        // Button cross marks
+        ctx.strokeStyle = '#888'; ctx.lineWidth = 0.6;
         ctx.beginPath();
-        ctx.moveTo(-8, 10); ctx.lineTo(-8, 14);
-        ctx.moveTo(-6, 10); ctx.lineTo(-6, 14);
-        ctx.moveTo(-4, 10); ctx.lineTo(-4, 14);
-        ctx.stroke();
-
-        // Shirt (Red Plaid)
-        ctx.fillStyle = '#dc2626';
-        ctx.fillRect(-15, -16, 30, 16);
-        // Plaid pattern - horizontal
-        ctx.strokeStyle = '#991b1b'; ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(-15, -12); ctx.lineTo(15, -12);
-        ctx.moveTo(-15, -6); ctx.lineTo(15, -6);
-        ctx.stroke();
-        // Plaid pattern - vertical
-        ctx.strokeStyle = '#7f1d1d'; ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(-8, -16); ctx.lineTo(-8, 0);
-        ctx.moveTo(0, -16); ctx.lineTo(0, 0);
-        ctx.moveTo(8, -16); ctx.lineTo(8, 0);
+        ctx.moveTo(-9.5, -1); ctx.lineTo(-7.5, -1);
+        ctx.moveTo(-8.5, -2); ctx.lineTo(-8.5, 0);
+        ctx.moveTo(7.5, -1); ctx.lineTo(9.5, -1);
+        ctx.moveTo(8.5, -2); ctx.lineTo(8.5, 0);
         ctx.stroke();
 
-        // Arms (straw colored sticks)
-        ctx.strokeStyle = '#b8860b'; ctx.lineWidth = 5;
-        ctx.lineCap = 'round';
+        // Front pocket
+        ctx.strokeStyle = '#3a6fa0'; ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(-15, -10); ctx.lineTo(-28, -4);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(15, -10); ctx.lineTo(28, -4);
+        ctx.moveTo(-4, 3); ctx.lineTo(-4, 10); ctx.lineTo(4, 10); ctx.lineTo(4, 3);
         ctx.stroke();
 
-        // Red plaid sleeves on arms
-        ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 6;
+        // ===== PURPLE PATCH on overalls =====
+        ctx.fillStyle = '#d8a0e8';
+        // Slightly rotated patch for natural look
+        ctx.save();
+        ctx.translate(-9, 13);
+        ctx.rotate(-0.08);
+        ctx.fillRect(0, 0, 9, 8);
+        ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 1.2;
+        ctx.strokeRect(0, 0, 9, 8);
+        // Visible stitch marks around patch border
+        ctx.strokeStyle = '#7c3aed'; ctx.lineWidth = 0.8;
+        ctx.setLineDash([2, 2]);
+        ctx.strokeRect(-1.5, -1.5, 12, 11);
+        ctx.setLineDash([]);
+        // Cross-stitch on patch
+        ctx.strokeStyle = '#9333ea'; ctx.lineWidth = 0.7;
         ctx.beginPath();
-        ctx.moveTo(-15, -10); ctx.lineTo(-20, -8);
+        ctx.moveTo(2, 2); ctx.lineTo(2, 6);
+        ctx.moveTo(4.5, 2); ctx.lineTo(4.5, 6);
+        ctx.moveTo(7, 2); ctx.lineTo(7, 6);
         ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(15, -10); ctx.lineTo(20, -8);
-        ctx.stroke();
-        ctx.strokeStyle = '#991b1b'; ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(-16, -11); ctx.lineTo(-20, -9);
-        ctx.moveTo(-16, -9); ctx.lineTo(-20, -7);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(16, -11); ctx.lineTo(20, -9);
-        ctx.moveTo(16, -9); ctx.lineTo(20, -7);
-        ctx.stroke();
+        ctx.restore();
 
-        // Straw tufts at hands
-        ctx.strokeStyle = '#c8962e'; ctx.lineWidth = 1.5;
-        ctx.lineCap = 'round';
+        // ===== SHIRT (Red Buffalo Plaid) =====
+        ctx.fillStyle = '#cc2222';
+        // Rounded shirt body
         ctx.beginPath();
-        ctx.moveTo(-28, -4); ctx.lineTo(-32, -8);
-        ctx.moveTo(-28, -4); ctx.lineTo(-33, -3);
-        ctx.moveTo(-28, -4); ctx.lineTo(-31, 1);
-        ctx.moveTo(28, -4); ctx.lineTo(32, -8);
-        ctx.moveTo(28, -4); ctx.lineTo(33, -3);
-        ctx.moveTo(28, -4); ctx.lineTo(31, 1);
-        ctx.stroke();
-
-        // Yellow Scarf (flowing)
-        ctx.fillStyle = '#fbbf24';
-        // Main scarf wrap
-        ctx.beginPath();
-        ctx.moveTo(-16, -16); ctx.lineTo(16, -16);
-        ctx.lineTo(12, -10); ctx.lineTo(-12, -10);
+        ctx.moveTo(-17, -17);
+        ctx.lineTo(-17, 2);
+        ctx.lineTo(17, 2);
+        ctx.lineTo(17, -17);
         ctx.closePath(); ctx.fill();
-        // Flowing scarf tail
+
+        // Black squares for buffalo check pattern
+        ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        for (let gx = -16; gx < 16; gx += 8) {
+            for (let gy = -16; gy < 0; gy += 6) {
+                if ((Math.floor((gx + 16) / 8) + Math.floor((gy + 16) / 6)) % 2 === 0) {
+                    ctx.fillRect(gx, gy, 8, 6);
+                }
+            }
+        }
+        // Plaid lines - dark horizontal
+        ctx.strokeStyle = '#8b1a1a'; ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.moveTo(-12, -14);
-        ctx.quadraticCurveTo(-22, -18, -32, -8);
-        ctx.lineTo(-28, -3);
-        ctx.quadraticCurveTo(-18, -12, -12, -10);
+        ctx.moveTo(-17, -14); ctx.lineTo(17, -14);
+        ctx.moveTo(-17, -8); ctx.lineTo(17, -8);
+        ctx.moveTo(-17, -2); ctx.lineTo(17, -2);
+        ctx.stroke();
+        // Plaid lines - dark vertical
+        ctx.beginPath();
+        ctx.moveTo(-12, -17); ctx.lineTo(-12, 2);
+        ctx.moveTo(-4, -17); ctx.lineTo(-4, 2);
+        ctx.moveTo(4, -17); ctx.lineTo(4, 2);
+        ctx.moveTo(12, -17); ctx.lineTo(12, 2);
+        ctx.stroke();
+        // Lighter plaid accent lines
+        ctx.strokeStyle = 'rgba(255,200,200,0.2)'; ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(-17, -11); ctx.lineTo(17, -11);
+        ctx.moveTo(-17, -5); ctx.lineTo(17, -5);
+        ctx.moveTo(-8, -17); ctx.lineTo(-8, 2);
+        ctx.moveTo(0, -17); ctx.lineTo(0, 2);
+        ctx.moveTo(8, -17); ctx.lineTo(8, 2);
+        ctx.stroke();
+        // Shirt outline
+        ctx.strokeStyle = '#7a1515'; ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(-17, -17); ctx.lineTo(-17, 2); ctx.lineTo(17, 2); ctx.lineTo(17, -17);
+        ctx.stroke();
+
+        // ===== ARMS (wooden stick arms) =====
+        // Left arm - main stick
+        ctx.strokeStyle = '#a07030'; ctx.lineWidth = 6;
+        ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(-17, -10); ctx.lineTo(-34, -2); ctx.stroke();
+        // Right arm - main stick
+        ctx.beginPath(); ctx.moveTo(17, -10); ctx.lineTo(34, -2); ctx.stroke();
+        // Arm wood grain
+        ctx.strokeStyle = '#8b5e2a'; ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(-20, -9); ctx.lineTo(-30, -4);
+        ctx.moveTo(20, -9); ctx.lineTo(30, -4);
+        ctx.stroke();
+
+        // Plaid sleeves (on arms near shoulder)
+        ctx.strokeStyle = '#cc2222'; ctx.lineWidth = 8;
+        ctx.lineCap = 'butt';
+        ctx.beginPath(); ctx.moveTo(-17, -10); ctx.lineTo(-22, -8); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(17, -10); ctx.lineTo(22, -8); ctx.stroke();
+        // Sleeve plaid stripes
+        ctx.strokeStyle = '#8b1a1a'; ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(-18, -12); ctx.lineTo(-22, -10);
+        ctx.moveTo(-18, -9); ctx.lineTo(-22, -7);
+        ctx.moveTo(18, -12); ctx.lineTo(22, -10);
+        ctx.moveTo(18, -9); ctx.lineTo(22, -7);
+        ctx.stroke();
+
+        // ===== STRAW TUFTS AT HANDS (dense & prominent) =====
+        ctx.lineCap = 'round';
+        // Left hand straw - base layer
+        ctx.strokeStyle = '#b8860b'; ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(-33, -3); ctx.lineTo(-40, -10);
+        ctx.moveTo(-33, -2); ctx.lineTo(-42, -4);
+        ctx.moveTo(-33, -1); ctx.lineTo(-40, 4);
+        ctx.moveTo(-34, -4); ctx.lineTo(-38, -14);
+        ctx.moveTo(-34, 0); ctx.lineTo(-39, 8);
+        ctx.stroke();
+        // Left hand straw - highlights
+        ctx.strokeStyle = '#d4a84b'; ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(-34, -3); ctx.lineTo(-39, -8);
+        ctx.moveTo(-34, -1); ctx.lineTo(-41, -2);
+        ctx.moveTo(-34, 0); ctx.lineTo(-38, 6);
+        ctx.moveTo(-33, -5); ctx.lineTo(-37, -12);
+        ctx.moveTo(-33, 1); ctx.lineTo(-37, 7);
+        ctx.stroke();
+        // Right hand straw - base layer
+        ctx.strokeStyle = '#b8860b'; ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(33, -3); ctx.lineTo(40, -10);
+        ctx.moveTo(33, -2); ctx.lineTo(42, -4);
+        ctx.moveTo(33, -1); ctx.lineTo(40, 4);
+        ctx.moveTo(34, -4); ctx.lineTo(38, -14);
+        ctx.moveTo(34, 0); ctx.lineTo(39, 8);
+        ctx.stroke();
+        // Right hand straw - highlights
+        ctx.strokeStyle = '#d4a84b'; ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(34, -3); ctx.lineTo(39, -8);
+        ctx.moveTo(34, -1); ctx.lineTo(41, -2);
+        ctx.moveTo(34, 0); ctx.lineTo(38, 6);
+        ctx.moveTo(33, -5); ctx.lineTo(37, -12);
+        ctx.moveTo(33, 1); ctx.lineTo(37, 7);
+        ctx.stroke();
+
+        // ===== YELLOW SCARF (large, flowing, dramatic) =====
+        // Scarf wrap around neck
+        ctx.fillStyle = '#f0b820';
+        ctx.beginPath();
+        ctx.moveTo(-18, -17);
+        ctx.lineTo(18, -17);
+        ctx.lineTo(16, -10);
+        ctx.lineTo(-16, -10);
         ctx.closePath(); ctx.fill();
-        // Scarf highlight
-        ctx.fillStyle = '#fde68a';
+        // Scarf knot/fold at front
+        ctx.fillStyle = '#e5a810';
+        ctx.beginPath();
+        ctx.moveTo(-5, -15); ctx.lineTo(5, -15);
+        ctx.lineTo(3, -10); ctx.lineTo(-3, -10);
+        ctx.closePath(); ctx.fill();
+
+        // Flowing scarf tail (large, wavy)
+        ctx.fillStyle = '#f0b820';
         ctx.beginPath();
         ctx.moveTo(-14, -15);
-        ctx.quadraticCurveTo(-24, -16, -30, -7);
-        ctx.lineTo(-29, -5);
-        ctx.quadraticCurveTo(-20, -14, -13, -12);
+        ctx.quadraticCurveTo(-20, -22, -30, -18);
+        ctx.quadraticCurveTo(-40, -14, -42, -4);
+        ctx.quadraticCurveTo(-42, 2, -36, 5);
+        ctx.lineTo(-32, 2);
+        ctx.quadraticCurveTo(-36, -2, -36, -8);
+        ctx.quadraticCurveTo(-34, -14, -24, -16);
+        ctx.quadraticCurveTo(-18, -16, -14, -12);
         ctx.closePath(); ctx.fill();
 
-        // Head (round burlap/straw color)
+        // Scarf highlight/shine
+        ctx.fillStyle = '#fcd34d';
+        ctx.beginPath();
+        ctx.moveTo(-16, -16);
+        ctx.quadraticCurveTo(-24, -20, -32, -16);
+        ctx.quadraticCurveTo(-38, -12, -40, -4);
+        ctx.lineTo(-38, -2);
+        ctx.quadraticCurveTo(-36, -10, -28, -15);
+        ctx.quadraticCurveTo(-22, -17, -15, -13);
+        ctx.closePath(); ctx.fill();
+
+        // Scarf shadow edge
+        ctx.strokeStyle = '#c48a10'; ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(-36, 5);
+        ctx.quadraticCurveTo(-42, 2, -42, -4);
+        ctx.quadraticCurveTo(-40, -14, -30, -18);
+        ctx.stroke();
+
+        // ===== HEAD (round burlap) =====
+        // Head base - slightly larger for chibi feel
         ctx.fillStyle = '#d4a373';
-        ctx.beginPath(); ctx.arc(0, -27, 17, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(0, -30, 19, 0, Math.PI * 2); ctx.fill();
+        // Subtle shading on head
+        ctx.fillStyle = 'rgba(180, 120, 60, 0.15)';
+        ctx.beginPath(); ctx.arc(3, -28, 17, 0, Math.PI * 2); ctx.fill();
         // Head outline
-        ctx.lineWidth = 1.5; ctx.strokeStyle = '#8b5a2b'; ctx.stroke();
-        // Burlap texture lines on head
-        ctx.strokeStyle = 'rgba(139, 90, 43, 0.3)'; ctx.lineWidth = 0.5;
+        ctx.lineWidth = 2; ctx.strokeStyle = '#8b5a2b';
+        ctx.beginPath(); ctx.arc(0, -30, 19, 0, Math.PI * 2); ctx.stroke();
+
+        // Burlap weave texture on head
+        ctx.strokeStyle = 'rgba(139, 90, 43, 0.2)'; ctx.lineWidth = 0.6;
         ctx.beginPath();
-        ctx.moveTo(-8, -34); ctx.lineTo(-6, -20);
-        ctx.moveTo(0, -35); ctx.lineTo(0, -19);
-        ctx.moveTo(8, -34); ctx.lineTo(6, -20);
+        // Vertical weave lines
+        ctx.moveTo(-10, -40); ctx.lineTo(-8, -20);
+        ctx.moveTo(-4, -42); ctx.lineTo(-3, -18);
+        ctx.moveTo(2, -42); ctx.lineTo(3, -18);
+        ctx.moveTo(8, -40); ctx.lineTo(9, -20);
+        // Horizontal weave lines
+        ctx.moveTo(-14, -36); ctx.lineTo(14, -36);
+        ctx.moveTo(-16, -30); ctx.lineTo(16, -30);
+        ctx.moveTo(-14, -24); ctx.lineTo(14, -24);
         ctx.stroke();
 
-        // Eyes (button-style with X)
-        ctx.fillStyle = '#5c4033';
-        ctx.beginPath(); ctx.arc(-7, -29, 5, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(7, -29, 5, 0, Math.PI * 2); ctx.fill();
-        // X marks on buttons
-        ctx.strokeStyle = '#3e2723'; ctx.lineWidth = 1.8;
-        ctx.beginPath();
-        ctx.moveTo(-9.5, -31.5); ctx.lineTo(-4.5, -26.5);
-        ctx.moveTo(-4.5, -31.5); ctx.lineTo(-9.5, -26.5);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(4.5, -31.5); ctx.lineTo(9.5, -26.5);
-        ctx.moveTo(9.5, -31.5); ctx.lineTo(4.5, -26.5);
-        ctx.stroke();
-
-        // Mouth (stitched smile)
-        ctx.strokeStyle = '#3e2723'; ctx.lineWidth = 1.5;
+        // ===== EYES (large button style with X cross stitch) =====
+        // Left eye button
+        ctx.fillStyle = '#5c3a1e';
+        ctx.beginPath(); ctx.arc(-7, -32, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#3d2510'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(-7, -32, 6, 0, Math.PI * 2); ctx.stroke();
+        // Button rim highlight
+        ctx.strokeStyle = 'rgba(120, 80, 40, 0.5)'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(-7, -32, 4.5, 0, Math.PI * 2); ctx.stroke();
+        // X stitch on left eye
+        ctx.strokeStyle = '#2a1a08'; ctx.lineWidth = 2;
         ctx.lineCap = 'round';
         ctx.beginPath();
-        ctx.moveTo(-8, -19); ctx.lineTo(8, -19);
+        ctx.moveTo(-10, -35); ctx.lineTo(-4, -29);
         ctx.stroke();
-        // Stitch marks across mouth
-        ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(-7, -21); ctx.lineTo(-7, -17);
-        ctx.moveTo(-3.5, -21); ctx.lineTo(-3.5, -17);
-        ctx.moveTo(0, -21); ctx.lineTo(0, -17);
-        ctx.moveTo(3.5, -21); ctx.lineTo(3.5, -17);
-        ctx.moveTo(7, -21); ctx.lineTo(7, -17);
+        ctx.moveTo(-4, -35); ctx.lineTo(-10, -29);
         ctx.stroke();
 
-        // Hat brim (wide straw hat)
-        ctx.fillStyle = '#e8c95a';
-        ctx.beginPath(); ctx.ellipse(0, -40, 30, 8, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = '#b8860b'; ctx.lineWidth = 2; ctx.stroke();
-        // Hat top (dome)
-        ctx.fillStyle = '#e8c95a';
+        // Right eye button
+        ctx.fillStyle = '#5c3a1e';
+        ctx.beginPath(); ctx.arc(7, -32, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#3d2510'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(7, -32, 6, 0, Math.PI * 2); ctx.stroke();
+        // Button rim highlight
+        ctx.strokeStyle = 'rgba(120, 80, 40, 0.5)'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(7, -32, 4.5, 0, Math.PI * 2); ctx.stroke();
+        // X stitch on right eye
+        ctx.strokeStyle = '#2a1a08'; ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
         ctx.beginPath();
-        ctx.moveTo(-16, -40);
-        ctx.quadraticCurveTo(-16, -58, 0, -58);
-        ctx.quadraticCurveTo(16, -58, 16, -40);
-        ctx.closePath(); ctx.fill();
-        ctx.strokeStyle = '#b8860b'; ctx.lineWidth = 2; ctx.stroke();
-        // Hat cross-hatch pattern
-        ctx.strokeStyle = 'rgba(184, 134, 11, 0.4)'; ctx.lineWidth = 0.8;
-        ctx.beginPath();
-        ctx.moveTo(-10, -55); ctx.lineTo(-6, -42);
-        ctx.moveTo(-3, -56); ctx.lineTo(0, -42);
-        ctx.moveTo(4, -55); ctx.lineTo(7, -42);
-        ctx.moveTo(-12, -48); ctx.lineTo(12, -48);
-        ctx.moveTo(-14, -44); ctx.lineTo(14, -44);
+        ctx.moveTo(4, -35); ctx.lineTo(10, -29);
         ctx.stroke();
-        // Hat band
-        ctx.fillStyle = '#b8860b';
-        ctx.fillRect(-14, -43, 28, 3);
+        ctx.beginPath();
+        ctx.moveTo(10, -35); ctx.lineTo(4, -29);
+        ctx.stroke();
+
+        // ===== MOUTH (stitched zigzag smile) =====
+        ctx.strokeStyle = '#3d2510'; ctx.lineWidth = 2;
+        ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+        // Main horizontal mouth line
+        ctx.beginPath();
+        ctx.moveTo(-10, -21);
+        ctx.lineTo(10, -21);
+        ctx.stroke();
+        // Cross-stitch marks (6 stitches)
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(-9, -23.5); ctx.lineTo(-9, -18.5);
+        ctx.moveTo(-5.5, -23.5); ctx.lineTo(-5.5, -18.5);
+        ctx.moveTo(-2, -23.5); ctx.lineTo(-2, -18.5);
+        ctx.moveTo(2, -23.5); ctx.lineTo(2, -18.5);
+        ctx.moveTo(5.5, -23.5); ctx.lineTo(5.5, -18.5);
+        ctx.moveTo(9, -23.5); ctx.lineTo(9, -18.5);
+        ctx.stroke();
+
+        // ===== HAT (wide-brimmed straw hat) =====
+        // Hat brim - wide ellipse with depth
+        ctx.fillStyle = '#e0b830';
+        ctx.beginPath(); ctx.ellipse(0, -44, 34, 10, 0, 0, Math.PI * 2); ctx.fill();
+        // Brim darker edge ring
+        ctx.strokeStyle = '#a08020'; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.ellipse(0, -44, 34, 10, 0, 0, Math.PI * 2); ctx.stroke();
+        // Inner brim ring
+        ctx.strokeStyle = '#c09828'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.ellipse(0, -44, 28, 7, 0, 0, Math.PI * 2); ctx.stroke();
+        // Brim weave texture
+        ctx.strokeStyle = 'rgba(160, 128, 32, 0.3)'; ctx.lineWidth = 0.7;
+        for (let i = -30; i <= 30; i += 5) {
+            ctx.beginPath();
+            ctx.moveTo(i, -44 - Math.sqrt(Math.max(0, 1 - (i * i) / (34 * 34))) * 10);
+            ctx.lineTo(i, -44 + Math.sqrt(Math.max(0, 1 - (i * i) / (34 * 34))) * 10);
+            ctx.stroke();
+        }
+
+        // Hat top (dome shape)
+        ctx.fillStyle = '#dbb030';
+        ctx.beginPath();
+        ctx.moveTo(-18, -44);
+        ctx.bezierCurveTo(-18, -52, -14, -64, 0, -65);
+        ctx.bezierCurveTo(14, -64, 18, -52, 18, -44);
+        ctx.closePath(); ctx.fill();
+        // Dome outline
+        ctx.strokeStyle = '#a08020'; ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(-18, -44);
+        ctx.bezierCurveTo(-18, -52, -14, -64, 0, -65);
+        ctx.bezierCurveTo(14, -64, 18, -52, 18, -44);
+        ctx.stroke();
+
+        // Dense cross-hatch weave pattern on dome
+        ctx.strokeStyle = 'rgba(160, 120, 20, 0.35)'; ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        // Diagonal lines going right
+        ctx.moveTo(-14, -58); ctx.lineTo(-8, -46);
+        ctx.moveTo(-8, -62); ctx.lineTo(-2, -46);
+        ctx.moveTo(-2, -64); ctx.lineTo(4, -46);
+        ctx.moveTo(4, -62); ctx.lineTo(10, -46);
+        ctx.moveTo(10, -58); ctx.lineTo(14, -46);
+        // Diagonal lines going left
+        ctx.moveTo(14, -58); ctx.lineTo(8, -46);
+        ctx.moveTo(8, -62); ctx.lineTo(2, -46);
+        ctx.moveTo(2, -64); ctx.lineTo(-4, -46);
+        ctx.moveTo(-4, -62); ctx.lineTo(-10, -46);
+        ctx.moveTo(-10, -58); ctx.lineTo(-14, -46);
+        ctx.stroke();
+        // Horizontal weave lines on dome
+        ctx.beginPath();
+        ctx.moveTo(-16, -50); ctx.lineTo(16, -50);
+        ctx.moveTo(-14, -54); ctx.lineTo(14, -54);
+        ctx.moveTo(-10, -58); ctx.lineTo(10, -58);
+        ctx.moveTo(-6, -62); ctx.lineTo(6, -62);
+        ctx.stroke();
+
+        // Hat band (brown ribbon)
+        ctx.fillStyle = '#8b6914';
+        ctx.beginPath();
+        ctx.moveTo(-16, -47); ctx.lineTo(16, -47);
+        ctx.lineTo(16, -44); ctx.lineTo(-16, -44);
+        ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = '#6d5210'; ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.moveTo(-16, -47); ctx.lineTo(16, -47);
+        ctx.moveTo(-16, -44); ctx.lineTo(16, -44);
+        ctx.stroke();
+
+        // ===== STRAW WISPS from under hat =====
+        ctx.strokeStyle = '#c49a3c'; ctx.lineWidth = 1.5;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(-16, -43); ctx.lineTo(-20, -40);
+        ctx.moveTo(-14, -42); ctx.lineTo(-17, -38);
+        ctx.moveTo(16, -43); ctx.lineTo(20, -40);
+        ctx.moveTo(14, -42); ctx.lineTo(17, -38);
+        ctx.stroke();
 
         ctx.restore();
     }
