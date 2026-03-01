@@ -699,6 +699,123 @@ export const Home: React.FC<HomeProps> = ({ onStart }) => {
           </div>
         </div>
       </div>
+
+      {/* ======================= BOTTOM NAVIGATION BAR ======================= */}
+      <div className="absolute bottom-0 left-0 w-full z-40">
+        <div className="w-full flex items-end justify-center"
+          style={{
+            background: 'linear-gradient(180deg, rgba(30,33,56,0) 0%, rgba(30,33,56,0.95) 30%, #1a1d2e 100%)',
+            paddingTop: '20px',
+          }}>
+          <div className="w-full max-w-2xl flex items-end mx-auto px-2 pb-2 gap-1">
+
+            {/* Tab 1: ショップ */}
+            <button className="flex-1 flex flex-col items-center gap-1 py-2 px-1 rounded-xl transition-all group"
+              style={{
+                background: 'linear-gradient(180deg, rgba(90,96,128,0.6), rgba(42,46,72,0.8))',
+                border: '2px solid #4a5070',
+              }}>
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center"
+                style={{ background: 'linear-gradient(135deg, #fcd34d, #d97706)', boxShadow: '0 2px 6px rgba(0,0,0,0.4)' }}>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#5c3a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="9" fill="#f59e0b" stroke="#92400e" />
+                  <circle cx="12" cy="12" r="6" fill="#fbbf24" stroke="#b45309" strokeWidth="1.5" />
+                  <text x="12" y="16" textAnchor="middle" fill="#92400e" fontSize="10" fontWeight="bold" stroke="none">¥</text>
+                </svg>
+              </div>
+              <span className="game-text text-[10px]" style={{ color: '#8892b0' }}>ショップ</span>
+            </button>
+
+            {/* Tab 2: キャラ */}
+            <button className="flex-1 flex flex-col items-center gap-1 py-2 px-1 rounded-xl transition-all group"
+              style={{
+                background: 'linear-gradient(180deg, rgba(90,96,128,0.6), rgba(42,46,72,0.8))',
+                border: '2px solid #4a5070',
+              }}>
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center"
+                style={{ background: 'linear-gradient(135deg, #fde68a, #d4a017)', boxShadow: '0 2px 6px rgba(0,0,0,0.4)' }}>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+                  {/* Scarecrow face mini icon */}
+                  <circle cx="12" cy="11" r="8" fill="#f5deb3" stroke="#8b5a2b" strokeWidth="1.5" />
+                  {/* Hat brim */}
+                  <ellipse cx="12" cy="5" rx="10" ry="3" fill="#eab308" stroke="#ca8a04" strokeWidth="1" />
+                  {/* Hat dome */}
+                  <path d="M7 5Q12 -2 17 5" fill="#facc15" stroke="#ca8a04" strokeWidth="1" />
+                  {/* X eyes */}
+                  <path d="M8 10l2 2M10 10l-2 2" stroke="#5c3a1a" strokeWidth="1.5" strokeLinecap="round" />
+                  <path d="M14 10l2 2M16 10l-2 2" stroke="#5c3a1a" strokeWidth="1.5" strokeLinecap="round" />
+                  {/* Stitch smile */}
+                  <path d="M9 15h6" stroke="#5c3a1a" strokeWidth="1.5" />
+                  <path d="M10 14v2M12 14v2M14 14v2" stroke="#5c3a1a" strokeWidth="1" strokeLinecap="round" />
+                </svg>
+              </div>
+              <span className="game-text text-[10px]" style={{ color: '#8892b0' }}>キャラ</span>
+            </button>
+
+            {/* Tab 3: 装備 */}
+            <button className="flex-1 flex flex-col items-center gap-1 py-2 px-1 rounded-xl transition-all group"
+              style={{
+                background: 'linear-gradient(180deg, rgba(90,96,128,0.6), rgba(42,46,72,0.8))',
+                border: '2px solid #4a5070',
+              }}>
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center"
+                style={{ background: 'linear-gradient(135deg, #a3a3a3, #737373)', boxShadow: '0 2px 6px rgba(0,0,0,0.4)' }}>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+                  {/* Hoe icon */}
+                  <line x1="6" y1="20" x2="16" y2="6" stroke="#78350f" strokeWidth="3" strokeLinecap="round" />
+                  <path d="M14 4l6 4-3 2-5-4z" fill="#d1d5db" stroke="#6b7280" strokeWidth="1.5" strokeLinejoin="round" />
+                  {/* Small sword cross */}
+                  <line x1="18" y1="14" x2="22" y2="18" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="19" y1="16" x2="21" y2="16" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <span className="game-text text-[10px]" style={{ color: '#8892b0' }}>装備</span>
+            </button>
+
+            {/* Tab 4: 農地開拓 (ACTIVE) */}
+            <button className="flex-1 flex flex-col items-center gap-1 px-1 rounded-xl transition-all relative"
+              style={{
+                background: 'linear-gradient(180deg, rgba(250,204,21,0.25), rgba(234,179,8,0.15), rgba(42,46,72,0.9))',
+                border: '2px solid #facc15',
+                boxShadow: '0 0 20px rgba(250,204,21,0.3), inset 0 0 15px rgba(250,204,21,0.1)',
+                paddingTop: '6px',
+                paddingBottom: '10px',
+                marginTop: '-8px',
+              }}>
+              {/* Active indicator arrow */}
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-0 h-0"
+                style={{ borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: '8px solid #facc15' }} />
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center"
+                style={{
+                  background: 'linear-gradient(135deg, #4ade80, #16a34a)',
+                  boxShadow: '0 0 15px rgba(74,222,128,0.5), 0 3px 8px rgba(0,0,0,0.5)',
+                  border: '2px solid #22c55e',
+                }}>
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
+                  {/* Tractor mini icon */}
+                  <rect x="4" y="8" width="12" height="8" rx="1" fill="#dc2626" stroke="#991b1b" strokeWidth="1" />
+                  <rect x="14" y="6" width="6" height="6" rx="1" fill="#b91c1c" stroke="#7f1d1d" strokeWidth="1" />
+                  {/* Wheels */}
+                  <circle cx="8" cy="18" r="3.5" fill="#1f2937" stroke="#111827" strokeWidth="1" />
+                  <circle cx="8" cy="18" r="1.5" fill="#6b7280" />
+                  <circle cx="17" cy="18" r="2.5" fill="#1f2937" stroke="#111827" strokeWidth="1" />
+                  <circle cx="17" cy="18" r="1" fill="#6b7280" />
+                  {/* Exhaust */}
+                  <line x1="18" y1="6" x2="18" y2="2" stroke="#4b5563" strokeWidth="1.5" strokeLinecap="round" />
+                  <circle cx="18" cy="1" r="1.5" fill="#9ca3b8" opacity="0.5" />
+                  {/* Ground line */}
+                  <line x1="2" y1="21" x2="22" y2="21" stroke="#854d0e" strokeWidth="1.5" />
+                  <line x1="3" y1="22" x2="5" y2="22" stroke="#a16207" strokeWidth="1" />
+                  <line x1="7" y1="22" x2="9" y2="22" stroke="#a16207" strokeWidth="1" />
+                  <line x1="11" y1="22" x2="13" y2="22" stroke="#a16207" strokeWidth="1" />
+                </svg>
+              </div>
+              <span className="game-text text-[11px] font-black" style={{ color: '#facc15' }}>農地開拓</span>
+            </button>
+
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
