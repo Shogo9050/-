@@ -304,11 +304,12 @@ export const Home: React.FC<HomeProps> = ({ onStart }) => {
     }
     ctx.restore();
 
-    // 9. SCARECROW CHARACTER (BACK VIEW)
+    // 9. SCARECROW CHARACTER (RIGHT-FACING, looking at tornado/board)
     ctx.save();
-    const cx = W * 0.25;
-    const cy = H * 0.8;
+    const cx = W * 0.12;
+    const cy = H * 0.85;
     ctx.translate(cx, cy);
+    ctx.scale(0.9, 0.9); // slightly smaller, tucked to left edge
 
     // Wooden pole
     ctx.fillStyle = '#5c4033'; ctx.strokeStyle = '#2d1a11'; ctx.lineWidth = 3;
@@ -352,7 +353,7 @@ export const Home: React.FC<HomeProps> = ({ onStart }) => {
 
     // Hat (Back view, very wide brim)
     ctx.translate(0, -50);
-    ctx.rotate(0.1); // slight head tilt
+    ctx.rotate(-0.15); // tilted right, looking toward the board/tornado
 
     // Back of brim
     ctx.fillStyle = '#eab308'; ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 2;
@@ -370,12 +371,12 @@ export const Home: React.FC<HomeProps> = ({ onStart }) => {
     ctx.beginPath(); ctx.moveTo(-40, 0); ctx.quadraticCurveTo(0, 10, 40, 0); ctx.lineTo(42, 5); ctx.quadraticCurveTo(0, 15, -42, 5); ctx.fill();
     ctx.restore();
 
-    // 10. TRACTOR (Right Foreground)
+    // 10. TRACTOR (Far Right Edge, smaller to not obstruct UI)
     ctx.save();
-    const rx = W * 0.8;
-    const ry = H * 0.82;
+    const rx = W * 0.92;
+    const ry = H * 0.88;
     ctx.translate(rx, ry);
-    ctx.scale(1.2, 1.2); // make it big
+    ctx.scale(0.85, 0.85); // smaller, pushed to right edge
 
     // Back tire (left)
     DrawTire(ctx, -70, 30, 40, 15);
@@ -605,9 +606,9 @@ export const Home: React.FC<HomeProps> = ({ onStart }) => {
 
 
       {/* ======================= CENTRAL STAGE BOARD ======================= */}
-      <div className="absolute top-[90px] left-1/2 -translate-x-1/2 z-30 flex flex-col items-center">
+      <div className="absolute top-[70px] left-1/2 -translate-x-1/2 z-30 flex flex-col items-center">
         {/* Main Wood Board */}
-        <div className="relative p-4 rounded-xl w-[420px]"
+        <div className="relative p-6 rounded-2xl w-[520px] max-w-[90vw]"
           style={{
             background: 'linear-gradient(180deg, #d2a679, #ad7f50)',
             border: '6px solid #5c3a1e',
@@ -627,14 +628,14 @@ export const Home: React.FC<HomeProps> = ({ onStart }) => {
 
           {/* Stage Text */}
           <div className="text-center mt-2 mb-4">
-            <div className="text-white text-base font-black drop-shadow-[0_2px_1px_rgba(0,0,0,0.8)] tracking-widest" style={{ WebkitTextStroke: '1px #3a1e0a' }}>STAGE 1:</div>
-            <div className="text-white text-4xl font-black drop-shadow-[0_3px_2px_rgba(0,0,0,0.8)] tracking-wide mt-1" style={{ WebkitTextStroke: '1.5px #3a1e0a' }}>イナゴ襲来！</div>
+            <div className="text-white text-lg font-black drop-shadow-[0_2px_1px_rgba(0,0,0,0.8)] tracking-widest" style={{ WebkitTextStroke: '1px #3a1e0a' }}>STAGE 1:</div>
+            <div className="text-white text-5xl font-black drop-shadow-[0_3px_2px_rgba(0,0,0,0.8)] tracking-wide mt-1" style={{ WebkitTextStroke: '2px #3a1e0a' }}>イナゴ襲来！</div>
           </div>
 
           {/* Picture Frame */}
           <div className="relative bg-[#f5e6d3] p-1.5 rounded border-2 border-[#8b5a2b] shadow-inner mb-4">
             {/* Photo contents (Locusts in field) */}
-            <div className="w-full h-44 bg-gradient-to-b from-[#87ceeb] to-[#fcd34d] relative overflow-hidden rounded-sm border border-[#a16207]">
+            <div className="w-full h-52 bg-gradient-to-b from-[#87ceeb] to-[#fcd34d] relative overflow-hidden rounded-sm border border-[#a16207]">
               {/* Tiny sun */}
               <div className="absolute top-4 left-4 w-8 h-8 rounded-full bg-white opacity-80 shadow-[0_0_20px_#fff]" />
               {/* Wheat field in photo */}
