@@ -1,1 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800;900&display=swap');
 @import "tailwindcss";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'M PLUS Rounded 1c', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;
+  font-weight: 700;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Global text style: bold sans-serif with black stroke & drop shadow */
+.game-text {
+  font-weight: 800;
+  color: #fff;
+  text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000,
+    0 2px 4px rgba(0, 0, 0, 0.6);
+  letter-spacing: 0.02em;
+}
+
+.game-text-dark {
+  font-weight: 800;
+  color: #3a2510;
+  text-shadow:
+    -1px -1px 0 rgba(255, 255, 255, 0.3),
+    1px -1px 0 rgba(255, 255, 255, 0.3),
+    -1px 1px 0 rgba(255, 255, 255, 0.3),
+    1px 1px 0 rgba(255, 255, 255, 0.3),
+    0 2px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Wood panel base styling */
+.wood-panel {
+  background: linear-gradient(180deg, #3a3f5c 0%, #2a2e48 40%, #1e2138 100%);
+  border: 5px solid #5a6080;
+  border-radius: 20px;
+  box-shadow:
+    0 0 0 3px #1a1d2e,
+    0 8px 30px rgba(0, 0, 0, 0.7),
+    inset 0 2px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Dark button style for wood panels */
+.wood-btn {
+  position: relative;
+  padding: 12px 32px;
+  border-radius: 12px;
+  font-weight: 900;
+  font-size: 1.25rem;
+  border: 3px solid;
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.4);
+  transition: all 0.1s;
+  cursor: pointer;
+}
+
+.wood-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* Tutorial spotlight effect */
+@keyframes tutorialPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.6);
+  }
+
+  50% {
+    box-shadow: 0 0 0 20px rgba(250, 204, 21, 0);
+  }
+}
+
+.tutorial-pulse {
+  animation: tutorialPulse 2s infinite;
+}
+
+@keyframes floatBounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.float-bounce {
+  animation: floatBounce 2s ease-in-out infinite;
+}
