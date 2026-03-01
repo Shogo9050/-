@@ -79,7 +79,7 @@ export const Home: React.FC<HomeProps> = ({ onStart }) => {
   const bgCanvasRef = useRef<HTMLCanvasElement>(null);
 
   // Background Rendering
-  const drawBackground = useCallback((canvas: HTMLCanvasElement) => {
+  const drawBackground = useCallback((canvas: HTMLCanvasElement, time: number = 0) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     const W = canvas.width;
@@ -304,71 +304,113 @@ export const Home: React.FC<HomeProps> = ({ onStart }) => {
     }
     ctx.restore();
 
-    // 9. SCARECROW CHARACTER (RIGHT-FACING, looking at tornado/board)
+    // 9. SCARECROW (GAME BATTLE SKIN - Back view, with breathing idle)
+    const breathOffset = Math.sin(time * 0.002) * 4; // Sine-wave breathing
+    const breathScale = 1 + Math.sin(time * 0.002) * 0.01; // subtle scale pulse
     ctx.save();
     const cx = W * 0.12;
-    const cy = H * 0.85;
+    const cy = H * 0.85 + breathOffset;
     ctx.translate(cx, cy);
-    ctx.scale(0.9, 0.9); // slightly smaller, tucked to left edge
+    ctx.scale(1.8 * breathScale, 1.8 * breathScale); // scale up game sprite for lobby
+    ctx.scale(-1, 1); // mirror to face right (back view looking at tornado)
 
-    // Wooden pole
-    ctx.fillStyle = '#5c4033'; ctx.strokeStyle = '#2d1a11'; ctx.lineWidth = 3;
-    ctx.fillRect(-8, 50, 16, 150); ctx.strokeRect(-8, 50, 16, 150);
+    // -- Shadow --
+    ctx.fillStyle = 'rgba(0,0,0,0.2)';
+    ctx.beginPath(); ctx.ellipse(0, 32, 22, 6, 0, 0, Math.PI * 2); ctx.fill();
 
-    // Arms (wood sticks)
-    ctx.beginPath(); ctx.moveTo(0, -10); ctx.lineTo(-60, 40); ctx.lineTo(-65, 35); ctx.lineTo(0, -20); ctx.fillStyle = '#6b4226'; ctx.fill(); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0, -10); ctx.lineTo(60, 40); ctx.lineTo(65, 35); ctx.lineTo(0, -20); ctx.fill(); ctx.stroke();
+    // -- Legs (straw poles) --
+    ctx.fillStyle = '#c49a3c';
+    ctx.fillRect(-10, 22, 6, 10); ctx.fillRect(4, 22, 6, 10);
+    ctx.strokeStyle = '#9a7520'; ctx.lineWidth = 1;
+    ctx.strokeRect(-10, 22, 6, 10); ctx.strokeRect(4, 22, 6, 10);
+    // Straw tufts at feet
+    ctx.strokeStyle = '#d4a84b'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(-11, 31); ctx.lineTo(-15, 36); ctx.moveTo(-7, 32); ctx.lineTo(-7, 38);
+    ctx.moveTo(-3, 31); ctx.lineTo(0, 35); ctx.moveTo(3, 31); ctx.lineTo(0, 35);
+    ctx.moveTo(7, 32); ctx.lineTo(7, 38); ctx.moveTo(11, 31); ctx.lineTo(15, 36);
+    ctx.stroke();
 
+    // -- Overalls (Blue denim, back view) --
+    ctx.fillStyle = '#5b9bd5';
+    ctx.beginPath();
+    ctx.moveTo(-15, 0); ctx.lineTo(-16, 22); ctx.lineTo(16, 22); ctx.lineTo(15, 0); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#4a8bc4'; ctx.fillRect(-15, 12, 30, 10);
+    ctx.strokeStyle = '#3a6fa0'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(-15, 0); ctx.lineTo(-16, 22); ctx.lineTo(16, 22); ctx.lineTo(15, 0); ctx.stroke();
+    // Suspender straps (crossing on back)
+    ctx.fillStyle = '#5b9bd5';
+    ctx.fillRect(-12, -14, 7, 16); ctx.fillRect(5, -14, 7, 16);
+    ctx.strokeStyle = '#3a6fa0'; ctx.lineWidth = 1;
+    ctx.strokeRect(-12, -14, 7, 16); ctx.strokeRect(5, -14, 7, 16);
+    // Metal rivet buttons
+    ctx.fillStyle = '#ddd';
+    ctx.beginPath(); ctx.arc(-8.5, -1, 2.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(8.5, -1, 2.5, 0, Math.PI * 2); ctx.fill();
+    // Purple patch on overalls
+    ctx.save(); ctx.translate(-9, 13); ctx.rotate(-0.08);
+    ctx.fillStyle = '#d8a0e8'; ctx.fillRect(0, 0, 9, 8);
+    ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 1.2; ctx.strokeRect(0, 0, 9, 8);
+    ctx.restore();
+
+    // -- Shirt (Red plaid, back view) --
+    ctx.fillStyle = '#d04030';
+    ctx.beginPath();
+    ctx.moveTo(-18, -20); ctx.quadraticCurveTo(0, -24, 18, -20);
+    ctx.lineTo(16, 2); ctx.lineTo(-16, 2); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#8b2020'; ctx.lineWidth = 1; ctx.stroke();
+    // Plaid pattern on back
+    ctx.globalAlpha = 0.3; ctx.strokeStyle = '#2a0a0a'; ctx.lineWidth = 1;
+    for (let i = -15; i < 15; i += 5) { ctx.beginPath(); ctx.moveTo(i, -20); ctx.lineTo(i, 2); ctx.stroke(); }
+    for (let j = -20; j < 2; j += 5) { ctx.beginPath(); ctx.moveTo(-18, j); ctx.lineTo(18, j); ctx.stroke(); }
+    ctx.globalAlpha = 1;
+
+    // -- Arms (straw sticks from back) --
+    ctx.strokeStyle = '#c49a3c'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+    const armSway = Math.sin(time * 0.003) * 3;
+    ctx.beginPath(); ctx.moveTo(-16, -8); ctx.lineTo(-30, 8 + armSway); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(16, -8); ctx.lineTo(30, 8 - armSway); ctx.stroke();
     // Straw hands
-    ctx.fillStyle = '#eab308'; ctx.strokeStyle = '#ca8a04'; ctx.lineWidth = 1;
-    for (let i = 0; i < 6; i++) {
-      const s = (i - 2.5) * 0.2;
-      ctx.beginPath(); ctx.moveTo(-62, 38); ctx.lineTo(-62 + Math.cos(1.8 + s) * 25, 38 + Math.sin(1.8 + s) * 25); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(62, 38); ctx.lineTo(62 + Math.cos(1.3 - s) * 25, 38 + Math.sin(1.3 - s) * 25); ctx.stroke();
+    ctx.strokeStyle = '#d4a84b'; ctx.lineWidth = 1.5;
+    for (let i = 0; i < 4; i++) {
+      const s = (i - 1.5) * 0.3;
+      ctx.beginPath(); ctx.moveTo(-30, 8 + armSway); ctx.lineTo(-30 + Math.cos(1.5 + s) * 12, 8 + armSway + Math.sin(1.5 + s) * 12); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(30, 8 - armSway); ctx.lineTo(30 + Math.cos(1.6 - s) * 12, 8 - armSway + Math.sin(1.6 - s) * 12); ctx.stroke();
     }
 
-    // Body/Shirt (Red, back view)
-    ctx.fillStyle = '#c0392b'; ctx.strokeStyle = '#7b241c'; ctx.lineWidth = 3;
+    // -- Scarf (Red, flowing from back) --
+    ctx.fillStyle = '#e74c3c'; ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 1.5;
+    const scarfSway = Math.sin(time * 0.0025) * 5;
     ctx.beginPath();
-    ctx.moveTo(-35, -20); ctx.quadraticCurveTo(0, -30, 35, -20);
-    ctx.lineTo(45, 60); ctx.quadraticCurveTo(0, 70, -45, 60);
+    ctx.moveTo(-10, -20); ctx.quadraticCurveTo(-15 + scarfSway, -28, -8, -35 + scarfSway);
+    ctx.quadraticCurveTo(-2, -30, 2, -35 - scarfSway);
+    ctx.quadraticCurveTo(8, -28, 10, -20);
     ctx.closePath(); ctx.fill(); ctx.stroke();
-    // Shirt folds
-    ctx.beginPath(); ctx.moveTo(-15, -10); ctx.lineTo(-20, 50); ctx.moveTo(15, -10); ctx.lineTo(20, 50); ctx.stroke();
-    // Green patch on left arm
-    ctx.fillStyle = '#2ecc71'; ctx.fillRect(-45, 10, 15, 18); ctx.strokeRect(-45, 10, 15, 18);
 
-    // Overalls (Blue, back view)
-    ctx.fillStyle = '#2980b9'; ctx.strokeStyle = '#1a5276';
-    ctx.beginPath();
-    ctx.moveTo(-35, 40); ctx.quadraticCurveTo(0, 30, 35, 40);
-    ctx.lineTo(40, 90); ctx.lineTo(-40, 90); ctx.closePath(); ctx.fill(); ctx.stroke();
-    // Suspenders crossing in back
-    ctx.fillStyle = '#1f618d';
-    ctx.beginPath(); ctx.moveTo(-30, 40); ctx.lineTo(30, -20); ctx.lineTo(40, -20); ctx.lineTo(-20, 40); ctx.fill(); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(30, 40); ctx.lineTo(-30, -20); ctx.lineTo(-40, -20); ctx.lineTo(20, 40); ctx.fill(); ctx.stroke();
-    // Patch on pants
-    ctx.fillStyle = '#9b59b6'; ctx.fillRect(10, 60, 20, 20); ctx.strokeRect(10, 60, 20, 20);
-    ctx.beginPath(); ctx.moveTo(15, 65); ctx.lineTo(25, 75); ctx.moveTo(25, 65); ctx.lineTo(15, 75); ctx.stroke(); // stitches
+    // -- Head (burlap circle, back) --
+    ctx.fillStyle = '#f5deb3'; ctx.strokeStyle = '#c49a3c'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(0, -30, 14, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    // Burlap texture on back of head
+    ctx.globalAlpha = 0.2; ctx.strokeStyle = '#9a7520'; ctx.lineWidth = 0.5;
+    for (let i = -12; i < 12; i += 3) { ctx.beginPath(); ctx.moveTo(i, -42); ctx.lineTo(i, -18); ctx.stroke(); }
+    for (let j = -42; j < -18; j += 3) { ctx.beginPath(); ctx.moveTo(-12, j); ctx.lineTo(12, j); ctx.stroke(); }
+    ctx.globalAlpha = 1;
 
-    // Hat (Back view, very wide brim)
-    ctx.translate(0, -50);
-    ctx.rotate(-0.15); // tilted right, looking toward the board/tornado
-
-    // Back of brim
-    ctx.fillStyle = '#eab308'; ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.ellipse(0, 0, 70, 25, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    // Hat weave texture (concentric ellipses)
-    ctx.strokeStyle = '#ca8a04'; ctx.lineWidth = 1;
-    for (let r = 10; r < 70; r += 8) {
-      ctx.beginPath(); ctx.ellipse(0, 0, r, r * 0.35, 0, 0, Math.PI * 2); ctx.stroke();
-    }
-    // Crown (dome from back)
-    ctx.fillStyle = '#facc15'; ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(-40, 5); ctx.quadraticCurveTo(0, -60, 40, 5); ctx.quadraticCurveTo(0, 15, -40, 5); ctx.fill(); ctx.stroke();
+    // -- Hat (Straw hat, back view with weave) --
+    ctx.fillStyle = '#eab308'; ctx.strokeStyle = '#ca8a04'; ctx.lineWidth = 2;
+    // Brim
+    ctx.beginPath(); ctx.ellipse(0, -40, 28, 10, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    // Weave rings
+    ctx.strokeStyle = '#b8960e'; ctx.lineWidth = 0.5;
+    for (let r = 5; r < 28; r += 4) { ctx.beginPath(); ctx.ellipse(0, -40, r, r * 0.35, 0, 0, Math.PI * 2); ctx.stroke(); }
+    // Crown
+    ctx.fillStyle = '#facc15';
+    ctx.beginPath(); ctx.moveTo(-18, -42); ctx.quadraticCurveTo(0, -65, 18, -42); ctx.quadraticCurveTo(0, -36, -18, -42); ctx.fill();
+    ctx.strokeStyle = '#ca8a04'; ctx.lineWidth = 1.5; ctx.stroke();
     // Red hat band
     ctx.fillStyle = '#e74c3c';
-    ctx.beginPath(); ctx.moveTo(-40, 0); ctx.quadraticCurveTo(0, 10, 40, 0); ctx.lineTo(42, 5); ctx.quadraticCurveTo(0, 15, -42, 5); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-18, -42); ctx.quadraticCurveTo(0, -36, 18, -42); ctx.lineTo(19, -40); ctx.quadraticCurveTo(0, -34, -19, -40); ctx.fill();
+
     ctx.restore();
 
     // 10. TRACTOR (Far Right Edge, smaller to not obstruct UI)
@@ -445,18 +487,26 @@ export const Home: React.FC<HomeProps> = ({ onStart }) => {
     }
   }
 
-  // Handle Resize
+  // Animation loop for breathing idle + resize
   useEffect(() => {
     const canvas = bgCanvasRef.current;
     if (!canvas) return;
+    let animId: number;
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      drawBackground(canvas);
     };
     resize();
+    const animate = (time: number) => {
+      drawBackground(canvas, time);
+      animId = requestAnimationFrame(animate);
+    };
+    animId = requestAnimationFrame(animate);
     window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', resize);
+    };
   }, [drawBackground]);
 
 
@@ -605,8 +655,13 @@ export const Home: React.FC<HomeProps> = ({ onStart }) => {
       </div>
 
 
-      {/* ======================= CENTRAL STAGE BOARD ======================= */}
-      <div className="absolute top-[70px] left-1/2 -translate-x-1/2 z-30 flex flex-col items-center">
+      {/* ======================= CENTRAL STAGE BOARD (drops in with bounce) ======================= */}
+      <motion.div
+        initial={{ y: -300, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 120, damping: 12, delay: 0.3 }}
+        className="absolute top-[70px] left-1/2 -translate-x-1/2 z-30 flex flex-col items-center"
+      >
         {/* Main Wood Board */}
         <div className="relative p-6 rounded-2xl w-[520px] max-w-[90vw]"
           style={{
@@ -699,8 +754,9 @@ export const Home: React.FC<HomeProps> = ({ onStart }) => {
 
               {/* Deploy Button */}
               <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.06 }}
+                whileTap={{ scale: 0.93 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 onClick={onStart}
                 className="ml-10 w-full rounded-lg bg-gradient-to-b from-[#fcd34d] to-[#d97706] border-[3px] border-[#92400e] shadow-[0_6px_0_#78350f] active:shadow-none active:translate-y-[6px] flex items-center justify-center py-2 px-4 gap-2"
               >
@@ -713,7 +769,7 @@ export const Home: React.FC<HomeProps> = ({ onStart }) => {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* ======================= BOTTOM NAVIGATION BAR ======================= */}
       <div className="absolute bottom-0 left-0 w-full z-40">
