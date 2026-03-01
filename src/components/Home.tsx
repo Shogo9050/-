@@ -466,7 +466,7 @@ export const Home: React.FC<HomeProps> = ({ onStart }) => {
 
       {/* ======================= TOP BAR ======================= */}
       <div className="absolute top-0 left-0 w-full z-40">
-        <div className="relative w-full h-14 flex items-center px-4"
+        <div className="relative w-full h-14 flex items-center justify-between px-3"
           style={{
             background: 'linear-gradient(180deg, #b07c50 0%, #8b5a2b 40%, #5c3a1a 100%)',
             borderBottom: '4px solid #3a1e0a',
@@ -475,46 +475,70 @@ export const Home: React.FC<HomeProps> = ({ onStart }) => {
           {/* Wood grain overlay */}
           <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(180deg, transparent, transparent 2px, #3a1e0a 2px, #3a1e0a 3px)' }} />
 
-          {/* Back btn */}
-          <button className="relative w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border-[3px] border-[#4a2e14] bg-[#f5e6d3] shadow-[0_2px_5px_rgba(0,0,0,0.5)] active:translate-y-1">
-            <ChevronLeft className="text-[#5c3a1a] w-8 h-8 font-black" />
-          </button>
+          {/* ===== LEFT: Back + Player Icon + Settings ===== */}
+          <div className="flex items-center gap-2 relative z-10">
+            {/* Back btn */}
+            <button className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border-[3px] border-[#4a2e14] bg-[#f5e6d3] shadow-[0_2px_5px_rgba(0,0,0,0.5)] active:translate-y-1">
+              <ChevronLeft className="text-[#5c3a1a] w-7 h-7" />
+            </button>
 
-          <span className="text-white font-black text-xl tracking-wide ml-4 mr-auto drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]" style={{ WebkitTextStroke: '1px #3a1e0a' }}>
-            バトル(ステージ選択)
-          </span>
-
-          <div className="flex gap-4 sm:gap-8 items-center mr-4">
-            {/* Stamina */}
-            <div className="relative flex items-center bg-black/40 rounded-r-full h-8 min-w-[160px] border border-[#3a1e0a] shadow-[inset_0_2px_5px_rgba(0,0,0,0.5)]">
-              {/* Protruding Icon */}
-              <div className="absolute -left-6 w-12 h-12">
-                <WateringCanIcon />
+            {/* Player Level Icon */}
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-full border-[3px] border-[#facc15] overflow-hidden flex items-center justify-center shadow-[0_0_10px_rgba(250,204,21,0.4)]"
+                style={{ background: 'linear-gradient(135deg, #fde68a, #d4a017)' }}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
+                  <circle cx="12" cy="11" r="7" fill="#f5deb3" stroke="#8b5a2b" strokeWidth="1.5" />
+                  <ellipse cx="12" cy="6" rx="9" ry="2.5" fill="#eab308" stroke="#ca8a04" strokeWidth="0.8" />
+                  <path d="M8 6Q12 0 16 6" fill="#facc15" stroke="#ca8a04" strokeWidth="0.8" />
+                  <path d="M9 10l1.5 1.5M10.5 10l-1.5 1.5" stroke="#5c3a1a" strokeWidth="1.2" strokeLinecap="round" />
+                  <path d="M13.5 10l1.5 1.5M15 10l-1.5 1.5" stroke="#5c3a1a" strokeWidth="1.2" strokeLinecap="round" />
+                  <path d="M10 14h4" stroke="#5c3a1a" strokeWidth="1.2" />
+                </svg>
               </div>
-              {/* Bar area */}
-              <div className="ml-8 w-full pr-8 py-1">
-                <div className="w-full h-4 bg-black/60 rounded-sm border border-[#4d7c0f] overflow-hidden relative">
+              <div className="flex flex-col">
+                <span className="text-white font-black text-sm leading-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" style={{ WebkitTextStroke: '0.5px #3a1e0a' }}>Lv.1</span>
+                <span className="text-white/70 text-[9px] font-bold leading-tight">かかし見習い</span>
+              </div>
+            </div>
+
+            {/* Settings btn */}
+            <button className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 border-2 border-[#4a2e14] shadow-[0_2px_4px_rgba(0,0,0,0.4)] active:translate-y-0.5"
+              style={{ background: 'linear-gradient(180deg, #8b6a3e, #6b4226)' }}>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#f5e6d3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              </svg>
+            </button>
+          </div>
+
+          {/* ===== RIGHT: Resources ===== */}
+          <div className="flex gap-3 items-center relative z-10">
+            {/* Stamina */}
+            <div className="relative flex items-center bg-black/40 rounded-full h-7 min-w-[130px] border border-[#3a1e0a] shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]">
+              <div className="absolute -left-4 w-9 h-9"><WateringCanIcon /></div>
+              <div className="ml-6 w-full pr-7 py-0.5">
+                <div className="w-full h-3.5 bg-black/60 rounded-sm border border-[#4d7c0f] overflow-hidden relative">
                   <div className="absolute left-0 top-0 h-full w-full bg-gradient-to-b from-[#84cc16] to-[#4d7c0f]" />
-                  <div className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-white drop-shadow-[0_1px_1px_rgba(0,0,0,1)]">
-                    30/30 <span className="opacity-70 ml-1">(+1 in 18:45)</span>
+                  <div className="absolute inset-0 flex items-center justify-center text-[9px] font-black text-white drop-shadow-[0_1px_1px_rgba(0,0,0,1)]">
+                    30/30
                   </div>
                 </div>
               </div>
-              <button className="absolute -right-2 w-7 h-7 bg-gradient-to-b from-[#fca5a5] to-[#dc2626] rounded-full border-2 border-[#7f1d1d] flex items-center justify-center text-white font-black shadow-md hover:scale-110 pb-0.5">+</button>
+              <button className="absolute -right-1.5 w-5 h-5 bg-gradient-to-b from-[#fca5a5] to-[#dc2626] rounded-full border-2 border-[#7f1d1d] flex items-center justify-center text-white text-[10px] font-black shadow-sm">+</button>
             </div>
 
             {/* Gold */}
-            <div className="relative flex items-center bg-black/40 rounded-r-full h-8 min-w-[120px] border border-[#3a1e0a] shadow-[inset_0_2px_5px_rgba(0,0,0,0.5)]">
-              <div className="absolute -left-5 w-10 h-10"><GoldIcon /></div>
-              <div className="ml-6 w-full text-center pr-4 text-white font-black drop-shadow-[0_1px_1px_rgba(0,0,0,1)]">12,500</div>
-              <button className="absolute -right-2 w-7 h-7 bg-gradient-to-b from-[#86efac] to-[#16a34a] rounded-full border-2 border-[#14532d] flex items-center justify-center text-white font-black shadow-md hover:scale-110 pb-0.5">+</button>
+            <div className="relative flex items-center bg-black/40 rounded-full h-7 min-w-[90px] border border-[#3a1e0a] shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]">
+              <div className="absolute -left-3.5 w-8 h-8"><GoldIcon /></div>
+              <div className="ml-5 w-full text-center pr-3 text-white font-black text-xs drop-shadow-[0_1px_1px_rgba(0,0,0,1)]">12,500</div>
+              <button className="absolute -right-1.5 w-5 h-5 bg-gradient-to-b from-[#86efac] to-[#16a34a] rounded-full border-2 border-[#14532d] flex items-center justify-center text-white text-[10px] font-black shadow-sm">+</button>
             </div>
 
             {/* Gem */}
-            <div className="relative flex items-center bg-black/40 rounded-r-full h-8 min-w-[80px] border border-[#3a1e0a] shadow-[inset_0_2px_5px_rgba(0,0,0,0.5)] hidden sm:flex">
-              <div className="absolute -left-5 w-10 h-10"><GemIcon /></div>
-              <div className="ml-6 w-full text-center pr-4 text-white font-black drop-shadow-[0_1px_1px_rgba(0,0,0,1)]">150</div>
-              <button className="absolute -right-2 w-7 h-7 bg-gradient-to-b from-[#86efac] to-[#16a34a] rounded-full border-2 border-[#14532d] flex items-center justify-center text-white font-black shadow-md hover:scale-110 pb-0.5">+</button>
+            <div className="relative flex items-center bg-black/40 rounded-full h-7 min-w-[70px] border border-[#3a1e0a] shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]">
+              <div className="absolute -left-3.5 w-8 h-8"><GemIcon /></div>
+              <div className="ml-5 w-full text-center pr-3 text-white font-black text-xs drop-shadow-[0_1px_1px_rgba(0,0,0,1)]">150</div>
+              <button className="absolute -right-1.5 w-5 h-5 bg-gradient-to-b from-[#86efac] to-[#16a34a] rounded-full border-2 border-[#14532d] flex items-center justify-center text-white text-[10px] font-black shadow-sm">+</button>
             </div>
           </div>
         </div>
@@ -527,65 +551,55 @@ export const Home: React.FC<HomeProps> = ({ onStart }) => {
         <div className="absolute top-16 left-1/2 translate-x-[80px] w-8 h-4 border-4 border-gray-600 rounded-full bg-transparent" />
       </div>
 
-      {/* ======================= SIDE BUTTONS ======================= */}
-      <div className="absolute left-4 top-24 z-30 flex flex-col gap-6">
+      {/* ======================= RIGHT SIDE BUTTONS (All consolidated) ======================= */}
+      <div className="absolute right-3 top-20 z-30 flex flex-col gap-3">
+        {/* Login */}
         <div className="group cursor-pointer flex flex-col items-center">
-          <div className="w-16 h-16 rounded-2xl p-2 bg-gradient-to-b from-[#a3c2c2] to-[#7a9999] border-4 border-[#3a1e0a] shadow-[0_5px_0_#3a1e0a,_0_10px_10px_rgba(0,0,0,0.5)] relative overflow-hidden active:translate-y-1 active:shadow-[0_0px_0_#3a1e0a]">
+          <div className="relative w-14 h-14 rounded-2xl p-2.5 bg-gradient-to-b from-[#e2e8f0] to-[#cbd5e1] border-3 border-[#3a1e0a] shadow-[0_4px_0_#3a1e0a,_0_8px_8px_rgba(0,0,0,0.4)] active:translate-y-1 active:shadow-[0_0px_0_#3a1e0a]">
+            <div className="w-full h-full bg-white rounded border border-gray-400 relative">
+              <div className="w-full h-2.5 bg-red-600 rounded-t border-b border-red-800 flex justify-evenly items-center">
+                <div className="w-1 h-2.5 bg-gray-200 rounded-full -mt-1.5 border border-gray-400" />
+                <div className="w-1 h-2.5 bg-gray-200 rounded-full -mt-1.5 border border-gray-400" />
+              </div>
+              <div className="text-[8px] font-black text-center mt-0.5 text-gray-800">LOGIN</div>
+              <div className="absolute mt-0 left-1 text-green-500 font-black text-base">✓</div>
+            </div>
+          </div>
+          <span className="game-text text-[9px] mt-1" style={{ color: '#d4d4d8' }}>ログイン</span>
+        </div>
+
+        {/* Event */}
+        <div className="group cursor-pointer flex flex-col items-center">
+          <div className="w-14 h-14 rounded-2xl p-1.5 bg-gradient-to-b from-[#8b5a2b] to-[#5c4033] border-3 border-[#3a1e0a] shadow-[0_4px_0_#3a1e0a,_0_8px_8px_rgba(0,0,0,0.4)] relative active:translate-y-1 active:shadow-[0_0px_0_#3a1e0a]">
+            <GrasshopperIcon />
+          </div>
+          <span className="game-text text-[9px] mt-1" style={{ color: '#d4d4d8' }}>イベント</span>
+          <motion.div animate={{ opacity: [1, 0.4, 1] }} transition={{ duration: 1, repeat: Infinity }} className="text-[8px] font-black" style={{ color: '#f87171', textShadow: '0 0 4px rgba(255,0,0,0.5)' }}>
+            緊急クエスト!
+          </motion.div>
+        </div>
+
+        {/* Quick Patrol */}
+        <div className="group cursor-pointer flex flex-col items-center">
+          <div className="w-14 h-14 rounded-2xl p-1.5 bg-gradient-to-b from-[#a3c2c2] to-[#7a9999] border-3 border-[#3a1e0a] shadow-[0_4px_0_#3a1e0a,_0_8px_8px_rgba(0,0,0,0.4)] relative overflow-hidden active:translate-y-1 active:shadow-[0_0px_0_#3a1e0a]">
             <div className="absolute inset-0 bg-white/20" />
             <DroneIcon />
           </div>
-          <div className="mt-4 text-center">
-            <div className="text-white font-black text-[12px] drop-shadow-[0_2px_2px_rgba(0,0,0,1)]" style={{ WebkitTextStroke: '0.5px #000' }}>クイックパトロール</div>
-            <div className="text-white/90 font-bold text-[9px] drop-shadow-[0_1px_1px_rgba(0,0,0,1)]">スタミナ消費で即時報酬</div>
-          </div>
+          <span className="game-text text-[9px] mt-1" style={{ color: '#d4d4d8' }}>パトロール</span>
         </div>
 
-        <div className="group cursor-pointer flex flex-col items-center mt-2">
+        {/* Patrol Reward */}
+        <div className="group cursor-pointer flex flex-col items-center">
           <div className="relative">
-            <div className="w-16 h-16 rounded-2xl p-2 bg-gradient-to-b from-[#d4a017] to-[#b45309] border-4 border-[#3a1e0a] shadow-[0_5px_0_#3a1e0a,_0_10px_10px_rgba(0,0,0,0.5)] relative overflow-hidden active:translate-y-1 active:shadow-[0_0px_0_#3a1e0a]">
+            <div className="w-14 h-14 rounded-2xl p-1.5 bg-gradient-to-b from-[#d4a017] to-[#b45309] border-3 border-[#3a1e0a] shadow-[0_4px_0_#3a1e0a,_0_8px_8px_rgba(0,0,0,0.4)] relative overflow-hidden active:translate-y-1 active:shadow-[0_0px_0_#3a1e0a]">
               <div className="absolute inset-0 bg-white/20" />
               <BasketIcon />
             </div>
-            {/* Badge */}
-            <motion.div animate={{ y: [-3, 3, -3] }} transition={{ repeat: Infinity, duration: 2 }} className="absolute -top-3 -right-6 bg-white border-2 border-[#d97706] rounded-full px-2 py-0.5 z-10 shadow-lg">
-              <span className="text-[#b45309] font-black text-[10px]">収穫アリ!</span>
-              <div className="absolute -bottom-1 left-2 w-2 h-2 bg-white border-b-2 border-r-2 border-[#d97706] rotate-45" />
+            <motion.div animate={{ y: [-2, 2, -2] }} transition={{ repeat: Infinity, duration: 1.5 }} className="absolute -top-2 -left-5 bg-white border-2 border-[#d97706] rounded-full px-1.5 py-0.5 z-10 shadow-md">
+              <span className="text-[#b45309] font-black text-[8px]">収穫アリ!</span>
             </motion.div>
           </div>
-          <div className="mt-4 text-center">
-            <div className="text-white font-black text-[12px] drop-shadow-[0_2px_2px_rgba(0,0,0,1)]" style={{ WebkitTextStroke: '0.5px #000' }}>パトロール報酬</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="absolute right-4 top-24 z-30 flex flex-col gap-6">
-        <div className="group cursor-pointer flex flex-col items-center">
-          <div className="relative w-16 h-16 rounded-2xl p-3 bg-gradient-to-b from-[#e2e8f0] to-[#cbd5e1] border-4 border-[#3a1e0a] shadow-[0_5px_0_#3a1e0a,_0_10px_10px_rgba(0,0,0,0.5)] active:translate-y-1 active:shadow-[0_0px_0_#3a1e0a]">
-            {/* Calendar graphic */}
-            <div className="w-full h-full bg-white rounded border border-gray-400 relative">
-              <div className="w-full h-3 bg-red-600 rounded-t border-b border-red-800 flex justify-evenly items-center">
-                <div className="w-1.5 h-3 bg-gray-200 rounded-full -mt-2 border border-gray-400" />
-                <div className="w-1.5 h-3 bg-gray-200 rounded-full -mt-2 border border-gray-400" />
-              </div>
-              <div className="text-[10px] font-black text-center mt-0.5 text-gray-800">LOGIN</div>
-              <div className="absolute mt-1 left-1.5 text-green-500 font-black text-lg">✓</div>
-            </div>
-          </div>
-          <div className="mt-4 rounded bg-[#8b5a2b] border-2 border-[#4a2e14] px-4 py-0.5 shadow-md">
-            <div className="text-white font-black text-[12px] drop-shadow-[0_1px_1px_rgba(0,0,0,1)]">ログイン</div>
-          </div>
-        </div>
-
-        <div className="group cursor-pointer flex flex-col items-center mt-2">
-          <div className="w-16 h-16 rounded-2xl p-2 bg-gradient-to-b from-[#8b5a2b] to-[#5c4033] border-4 border-[#3a1e0a] shadow-[0_5px_0_#3a1e0a,_0_10px_10px_rgba(0,0,0,0.5)] relative active:translate-y-1 active:shadow-[0_0px_0_#3a1e0a]">
-            <GrasshopperIcon />
-          </div>
-          <div className="mt-4 rounded bg-[#8b5a2b] border-2 border-[#4a2e14] px-4 py-0.5 shadow-md">
-            <div className="text-white font-black text-[12px] drop-shadow-[0_1px_1px_rgba(0,0,0,1)]">イベント</div>
-          </div>
-          <motion.div animate={{ opacity: [1, 0.4, 1] }} transition={{ duration: 1, repeat: Infinity }} className="text-white font-black text-[10px] mt-1 drop-shadow-[0_1px_1px_rgba(0,0,0,1)]" style={{ WebkitTextStroke: '0.5px #000' }}>
-            緊急クエスト!
-          </motion.div>
+          <span className="game-text text-[9px] mt-1" style={{ color: '#d4d4d8' }}>報酬</span>
         </div>
       </div>
 
@@ -816,6 +830,6 @@ export const Home: React.FC<HomeProps> = ({ onStart }) => {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
